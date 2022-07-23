@@ -1,0 +1,63 @@
+syntax = "proto3";
+package freemasonry.chat.v1;
+
+import "google/api/annotations.proto";
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "freemasonry.cc/blockchain/x/chat/types";
+
+// Msg defines the erc20 Msg service.
+service Msg {
+  // ConvertCoin mints a ERC20 representation of the native Cosmos coin denom
+  // that is registered on the token mapping.
+  rpc Test(MsgTest) returns (MsgTestResponse) {
+    option (google.api.http).get = "/evmos/erc20/v1/tx/convert_coin";
+  };
+  rpc Register(MsgRegister) returns (MsgEmptyResponse);
+  rpc MortGage(MsgMortgage) returns (MsgEmptyResponse);
+  rpc SetChatFee(MsgSetChatFee) returns (MsgEmptyResponse);
+  rpc SendGift(MsgSendGift) returns (MsgEmptyResponse);
+}
+
+// MsgConvertCoin defines a Msg to convert a native Cosmos coin to a ERC20 token
+message MsgTest {
+  // Cosmos coin which denomination is registered in a token pair. The coin
+  // amount defines the amount of coins to convert.
+  cosmos.base.v1beta1.Coin coin = 1 [ (gogoproto.nullable) = false ];
+  // recipient hex address to receive ERC20 token
+  string receiver = 2;
+  // cosmos bech32 address from the owner of the given Cosmos coins
+  string sender = 3;
+}
+
+message MsgRegister {
+  string from_address = 1 [(gogoproto.moretags) = "yaml:\"from_address\""];
+  string node_address = 2 [(gogoproto.moretags) = "yaml:\"node_address\""];
+  cosmos.base.v1beta1.Coin mortgage_amount = 3 [(gogoproto.nullable) = false,(gogoproto.moretags) = "yaml:\"mortgage_amount\""];
+}
+
+message MsgMortgage {
+  string from_address = 1 [(gogoproto.moretags) = "yaml:\"from_address\""];
+  string node_address = 2 [(gogoproto.moretags) = "yaml:\"node_address\""];
+  cosmos.base.v1beta1.Coin mortgage_amount = 3 [(gogoproto.nullable) = false,(gogoproto.moretags) = "yaml:\"mortgage_amount\""];
+}
+
+message MsgSetChatFee {
+  string from_address = 1 [(gogoproto.moretags) = "yaml:\"from_address\""];
+  cosmos.base.v1beta1.Coin fee = 2 [(gogoproto.nullable) = false,(gogoproto.moretags) = "yaml:\"fee\""];
+}
+
+message MsgSendGift {
+  string                    from_address = 1  [(gogoproto.moretags) = "yaml:\"from_address\""];
+  string                    node_address = 2  [(gogoproto.moretags) = "yaml:\"node_address\""];
+  string                    to_address = 3    [(gogoproto.moretags) = "yaml:\"to_address\""];
+  int64                     gift_id = 4       [(gogoproto.moretags) = "yaml:\"gift_id\""];
+  int64                     gift_amount = 5   [(gogoproto.moretags) = "yaml:\"gift_amount\""];
+  cosmos.base.v1beta1.Coin  gift_value = 6    [(gogoproto.nullable) = false,(gogoproto.moretags) = "yaml:\"gift_value\""];
+}
+
+// MsgConvertCoinResponse returns no fieldsyou
+message MsgEmptyResponse {}
+message MsgTestResponse {}
+
