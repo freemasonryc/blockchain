@@ -51,9 +51,9 @@ func TestWeightedOperations(t *testing.T) {
 
 	for i, w := range weightesOps {
 		operationMsg, _, _ := w.Op()(r, app.BaseApp, ctx, accs, ctx.ChainID())
-
-
-
+		
+		
+		
 		require.Equal(t, expected[i].weight, w.Weight(), "weight should be the same")
 		require.Equal(t, expected[i].opMsgRoute, operationMsg.Route, "route should be the same")
 		require.Equal(t, expected[i].opMsgName, operationMsg.Name, "operation Msg name should be the same")
@@ -65,15 +65,15 @@ func TestWeightedOperations(t *testing.T) {
 func TestSimulateMsgCreateValidator(t *testing.T) {
 	app, ctx := createTestApp(false)
 
-
+	
 	s := rand.NewSource(1)
 	r := rand.New(s)
 	accounts := getTestingAccounts(t, r, app, ctx, 3)
 
-
+	
 	app.BeginBlock(abci.RequestBeginBlock{Header: tmproto.Header{Height: app.LastBlockHeight() + 1, AppHash: app.LastCommitID().Hash}})
 
-
+	
 	op := simulation.SimulateMsgCreateValidator(app.AccountKeeper, app.BankKeeper, app.StakingKeeper)
 	operationMsg, futureOperations, err := op(r, app.BaseApp, ctx, accounts, "")
 	require.NoError(t, err)
@@ -99,18 +99,18 @@ func TestSimulateMsgEditValidator(t *testing.T) {
 	blockTime := time.Now().UTC()
 	ctx = ctx.WithBlockTime(blockTime)
 
-
+	
 	s := rand.NewSource(1)
 	r := rand.New(s)
 	accounts := getTestingAccounts(t, r, app, ctx, 3)
 
-
+	
 	_ = getTestingValidator0(t, app, ctx, accounts)
 
-
+	
 	app.BeginBlock(abci.RequestBeginBlock{Header: tmproto.Header{Height: app.LastBlockHeight() + 1, AppHash: app.LastCommitID().Hash, Time: blockTime}})
 
-
+	
 	op := simulation.SimulateMsgEditValidator(app.AccountKeeper, app.BankKeeper, app.StakingKeeper)
 	operationMsg, futureOperations, err := op(r, app.BaseApp, ctx, accounts, "")
 	require.NoError(t, err)
@@ -136,19 +136,19 @@ func TestSimulateMsgDelegate(t *testing.T) {
 	blockTime := time.Now().UTC()
 	ctx = ctx.WithBlockTime(blockTime)
 
-
+	
 	s := rand.NewSource(1)
 	r := rand.New(s)
 	accounts := getTestingAccounts(t, r, app, ctx, 3)
 
-
+	
 	validator0 := getTestingValidator0(t, app, ctx, accounts)
 	setupValidatorRewards(app, ctx, validator0.GetOperator())
 
-
+	
 	app.BeginBlock(abci.RequestBeginBlock{Header: tmproto.Header{Height: app.LastBlockHeight() + 1, AppHash: app.LastCommitID().Hash, Time: blockTime}})
 
-
+	
 	op := simulation.SimulateMsgDelegate(app.AccountKeeper, app.BankKeeper, app.StakingKeeper)
 	operationMsg, futureOperations, err := op(r, app.BaseApp, ctx, accounts, "")
 	require.NoError(t, err)
@@ -172,15 +172,15 @@ func TestSimulateMsgUndelegate(t *testing.T) {
 	blockTime := time.Now().UTC()
 	ctx = ctx.WithBlockTime(blockTime)
 
-
+	
 	s := rand.NewSource(1)
 	r := rand.New(s)
 	accounts := getTestingAccounts(t, r, app, ctx, 3)
 
-
+	
 	validator0 := getTestingValidator0(t, app, ctx, accounts)
 
-
+	
 	delTokens := app.StakingKeeper.TokensFromConsensusPower(ctx, 2)
 	validator0, issuedShares := validator0.AddTokensFromDel(delTokens)
 	delegator := accounts[1]
@@ -190,10 +190,10 @@ func TestSimulateMsgUndelegate(t *testing.T) {
 
 	setupValidatorRewards(app, ctx, validator0.GetOperator())
 
-
+	
 	app.BeginBlock(abci.RequestBeginBlock{Header: tmproto.Header{Height: app.LastBlockHeight() + 1, AppHash: app.LastCommitID().Hash, Time: blockTime}})
 
-
+	
 	op := simulation.SimulateMsgUndelegate(app.AccountKeeper, app.BankKeeper, app.StakingKeeper)
 	operationMsg, futureOperations, err := op(r, app.BaseApp, ctx, accounts, "")
 	require.NoError(t, err)
@@ -218,19 +218,19 @@ func TestSimulateMsgBeginRedelegate(t *testing.T) {
 	blockTime := time.Now().UTC()
 	ctx = ctx.WithBlockTime(blockTime)
 
-
+	
 	s := rand.NewSource(5)
 	r := rand.New(s)
 	accounts := getTestingAccounts(t, r, app, ctx, 3)
 
-
+	
 	validator0 := getTestingValidator0(t, app, ctx, accounts)
 	validator1 := getTestingValidator1(t, app, ctx, accounts)
 
 	delTokens := app.StakingKeeper.TokensFromConsensusPower(ctx, 2)
 	validator0, issuedShares := validator0.AddTokensFromDel(delTokens)
 
-
+	
 	delegator := accounts[2]
 	delegation := types.NewDelegation(delegator.Address, validator1.GetOperator(), issuedShares)
 	app.StakingKeeper.SetDelegation(ctx, delegation)
@@ -239,10 +239,10 @@ func TestSimulateMsgBeginRedelegate(t *testing.T) {
 	setupValidatorRewards(app, ctx, validator0.GetOperator())
 	setupValidatorRewards(app, ctx, validator1.GetOperator())
 
-
+	
 	app.BeginBlock(abci.RequestBeginBlock{Header: tmproto.Header{Height: app.LastBlockHeight() + 1, AppHash: app.LastCommitID().Hash, Time: blockTime}})
 
-
+	
 	op := simulation.SimulateMsgBeginRedelegate(app.AccountKeeper, app.BankKeeper, app.StakingKeeper)
 	operationMsg, futureOperations, err := op(r, app.BaseApp, ctx, accounts, "")
 	require.NoError(t, err)
@@ -263,7 +263,7 @@ func TestSimulateMsgBeginRedelegate(t *testing.T) {
 
 
 func createTestApp(isCheckTx bool) (*simapp.SimApp, sdk.Context) {
-
+	
 	app := simapp.Setup(isCheckTx)
 
 	ctx := app.BaseApp.NewContext(isCheckTx, tmproto.Header{})
@@ -279,7 +279,7 @@ func getTestingAccounts(t *testing.T, r *rand.Rand, app *simapp.SimApp, ctx sdk.
 	initAmt := app.StakingKeeper.TokensFromConsensusPower(ctx, 200)
 	initCoins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, initAmt))
 
-
+	
 	for _, account := range accounts {
 		acc := app.AccountKeeper.NewAccountWithAddress(ctx, account.Address)
 		app.AccountKeeper.SetAccount(ctx, acc)
@@ -319,7 +319,7 @@ func setupValidatorRewards(app *simapp.SimApp, ctx sdk.Context, valAddress sdk.V
 	decCoins := sdk.DecCoins{sdk.NewDecCoinFromDec(sdk.DefaultBondDenom, sdk.OneDec())}
 	historicalRewards := distrtypes.NewValidatorHistoricalRewards(decCoins, 2)
 	app.DistrKeeper.SetValidatorHistoricalRewards(ctx, valAddress, 2, historicalRewards)
-
+	
 	currentRewards := distrtypes.NewValidatorCurrentRewards(decCoins, 3)
 	app.DistrKeeper.SetValidatorCurrentRewards(ctx, valAddress, currentRewards)
 

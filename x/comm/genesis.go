@@ -15,7 +15,7 @@ func InitGenesis(
 	accountKeeper authkeeper.AccountKeeper,
 	data types.GenesisState,
 ) {
-
+	k.SetParams(ctx, data.Params)
 }
 
 

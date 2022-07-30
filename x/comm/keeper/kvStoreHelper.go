@@ -50,6 +50,12 @@ func (s StoreHelper) Set(key string, value interface{}) error {
 			return err
 		}
 		rawvalue = b
+	case reflect.Int64:
+		b, err := util.Json.Marshal(value)
+		if err != nil {
+			return err
+		}
+		rawvalue = b
 	default:
 		return HelpTypeError
 	}

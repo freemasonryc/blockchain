@@ -38,19 +38,19 @@ var _ = time.Kitchen
 
 
 
-const _ = proto.GoGoProtoPackageIsVersion3
+const _ = proto.GoGoProtoPackageIsVersion3 
 
 
 type BondStatus int32
 
 const (
-
+	
 	Unspecified BondStatus = 0
-
+	
 	Unbonded BondStatus = 1
-
+	
 	Unbonding BondStatus = 2
-
+	
 	Bonded BondStatus = 3
 )
 
@@ -135,11 +135,11 @@ func (m *HistoricalInfo) GetValset() []Validator {
 
 
 type CommissionRates struct {
-
+	
 	Rate github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,1,opt,name=rate,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"rate"`
-
+	
 	MaxRate github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,2,opt,name=max_rate,json=maxRate,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"max_rate" yaml:"max_rate"`
-
+	
 	MaxChangeRate github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,3,opt,name=max_change_rate,json=maxChangeRate,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"max_change_rate" yaml:"max_change_rate"`
 }
 
@@ -177,9 +177,9 @@ var xxx_messageInfo_CommissionRates proto.InternalMessageInfo
 
 
 type Commission struct {
-
+	
 	CommissionRates `protobuf:"bytes,1,opt,name=commission_rates,json=commissionRates,proto3,embedded=commission_rates" json:"commission_rates"`
-
+	
 	UpdateTime time.Time `protobuf:"bytes,2,opt,name=update_time,json=updateTime,proto3,stdtime" json:"update_time" yaml:"update_time"`
 }
 
@@ -224,15 +224,15 @@ func (m *Commission) GetUpdateTime() time.Time {
 
 
 type Description struct {
-
+	
 	Moniker string `protobuf:"bytes,1,opt,name=moniker,proto3" json:"moniker,omitempty"`
-
+	
 	Identity string `protobuf:"bytes,2,opt,name=identity,proto3" json:"identity,omitempty"`
-
+	
 	Website string `protobuf:"bytes,3,opt,name=website,proto3" json:"website,omitempty"`
-
+	
 	SecurityContact string `protobuf:"bytes,4,opt,name=security_contact,json=securityContact,proto3" json:"security_contact,omitempty" yaml:"security_contact"`
-
+	
 	Details string `protobuf:"bytes,5,opt,name=details,proto3" json:"details,omitempty"`
 }
 
@@ -312,27 +312,27 @@ func (m *Description) GetDetails() string {
 
 
 type Validator struct {
-
+	
 	OperatorAddress string `protobuf:"bytes,1,opt,name=operator_address,json=operatorAddress,proto3" json:"operator_address,omitempty" yaml:"operator_address"`
-
+	
 	ConsensusPubkey *types1.Any `protobuf:"bytes,2,opt,name=consensus_pubkey,json=consensusPubkey,proto3" json:"consensus_pubkey,omitempty" yaml:"consensus_pubkey"`
-
+	
 	Jailed bool `protobuf:"varint,3,opt,name=jailed,proto3" json:"jailed,omitempty"`
-
+	
 	Status BondStatus `protobuf:"varint,4,opt,name=status,proto3,enum=cosmos.staking.v1beta1.BondStatus" json:"status,omitempty"`
-
+	
 	Tokens github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,5,opt,name=tokens,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"tokens"`
-
+	
 	DelegatorShares github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,6,opt,name=delegator_shares,json=delegatorShares,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"delegator_shares" yaml:"delegator_shares"`
-
+	
 	Description Description `protobuf:"bytes,7,opt,name=description,proto3" json:"description"`
-
+	
 	UnbondingHeight int64 `protobuf:"varint,8,opt,name=unbonding_height,json=unbondingHeight,proto3" json:"unbonding_height,omitempty" yaml:"unbonding_height"`
-
+	
 	UnbondingTime time.Time `protobuf:"bytes,9,opt,name=unbonding_time,json=unbondingTime,proto3,stdtime" json:"unbonding_time" yaml:"unbonding_time"`
-
+	
 	Commission Commission `protobuf:"bytes,10,opt,name=commission,proto3" json:"commission"`
-
+	
 	MinSelfDelegation github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,11,opt,name=min_self_delegation,json=minSelfDelegation,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"min_self_delegation" yaml:"min_self_delegation"`
 }
 
@@ -588,11 +588,11 @@ func (m *DVVTriplets) GetTriplets() []DVVTriplet {
 
 
 type Delegation struct {
-
+	
 	DelegatorAddress string `protobuf:"bytes,1,opt,name=delegator_address,json=delegatorAddress,proto3" json:"delegator_address,omitempty" yaml:"delegator_address"`
-
+	
 	ValidatorAddress string `protobuf:"bytes,2,opt,name=validator_address,json=validatorAddress,proto3" json:"validator_address,omitempty" yaml:"validator_address"`
-
+	
 	Shares github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,3,opt,name=shares,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"shares"`
 }
 
@@ -631,11 +631,11 @@ var xxx_messageInfo_Delegation proto.InternalMessageInfo
 
 
 type UnbondingDelegation struct {
-
+	
 	DelegatorAddress string `protobuf:"bytes,1,opt,name=delegator_address,json=delegatorAddress,proto3" json:"delegator_address,omitempty" yaml:"delegator_address"`
-
+	
 	ValidatorAddress string `protobuf:"bytes,2,opt,name=validator_address,json=validatorAddress,proto3" json:"validator_address,omitempty" yaml:"validator_address"`
-
+	
 	Entries []UnbondingDelegationEntry `protobuf:"bytes,3,rep,name=entries,proto3" json:"entries"`
 }
 
@@ -673,13 +673,13 @@ var xxx_messageInfo_UnbondingDelegation proto.InternalMessageInfo
 
 
 type UnbondingDelegationEntry struct {
-
+	
 	CreationHeight int64 `protobuf:"varint,1,opt,name=creation_height,json=creationHeight,proto3" json:"creation_height,omitempty" yaml:"creation_height"`
-
+	
 	CompletionTime time.Time `protobuf:"bytes,2,opt,name=completion_time,json=completionTime,proto3,stdtime" json:"completion_time" yaml:"completion_time"`
-
+	
 	InitialBalance github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=initial_balance,json=initialBalance,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"initial_balance" yaml:"initial_balance"`
-
+	
 	Balance github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,4,opt,name=balance,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"balance"`
 }
 
@@ -731,13 +731,13 @@ func (m *UnbondingDelegationEntry) GetCompletionTime() time.Time {
 
 
 type RedelegationEntry struct {
-
+	
 	CreationHeight int64 `protobuf:"varint,1,opt,name=creation_height,json=creationHeight,proto3" json:"creation_height,omitempty" yaml:"creation_height"`
-
+	
 	CompletionTime time.Time `protobuf:"bytes,2,opt,name=completion_time,json=completionTime,proto3,stdtime" json:"completion_time" yaml:"completion_time"`
-
+	
 	InitialBalance github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=initial_balance,json=initialBalance,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"initial_balance" yaml:"initial_balance"`
-
+	
 	SharesDst github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,4,opt,name=shares_dst,json=sharesDst,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"shares_dst"`
 }
 
@@ -790,13 +790,13 @@ func (m *RedelegationEntry) GetCompletionTime() time.Time {
 
 
 type Redelegation struct {
-
+	
 	DelegatorAddress string `protobuf:"bytes,1,opt,name=delegator_address,json=delegatorAddress,proto3" json:"delegator_address,omitempty" yaml:"delegator_address"`
-
+	
 	ValidatorSrcAddress string `protobuf:"bytes,2,opt,name=validator_src_address,json=validatorSrcAddress,proto3" json:"validator_src_address,omitempty" yaml:"validator_src_address"`
-
+	
 	ValidatorDstAddress string `protobuf:"bytes,3,opt,name=validator_dst_address,json=validatorDstAddress,proto3" json:"validator_dst_address,omitempty" yaml:"validator_dst_address"`
-
+	
 	Entries []RedelegationEntry `protobuf:"bytes,4,rep,name=entries,proto3" json:"entries"`
 }
 
@@ -834,15 +834,15 @@ var xxx_messageInfo_Redelegation proto.InternalMessageInfo
 
 
 type Params struct {
-
+	
 	UnbondingTime time.Duration `protobuf:"bytes,1,opt,name=unbonding_time,json=unbondingTime,proto3,stdduration" json:"unbonding_time" yaml:"unbonding_time"`
-
+	
 	MaxValidators uint32 `protobuf:"varint,2,opt,name=max_validators,json=maxValidators,proto3" json:"max_validators,omitempty" yaml:"max_validators"`
-
+	
 	MaxEntries uint32 `protobuf:"varint,3,opt,name=max_entries,json=maxEntries,proto3" json:"max_entries,omitempty" yaml:"max_entries"`
-
+	
 	HistoricalEntries uint32 `protobuf:"varint,4,opt,name=historical_entries,json=historicalEntries,proto3" json:"historical_entries,omitempty" yaml:"historical_entries"`
-
+	
 	BondDenom string `protobuf:"bytes,5,opt,name=bond_denom,json=bondDenom,proto3" json:"bond_denom,omitempty" yaml:"bond_denom"`
 }
 
@@ -1138,7 +1138,7 @@ func init() {
 }
 
 var fileDescriptor_64c30c6cf92913c9 = []byte{
-
+	
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x58, 0x4d, 0x6c, 0x23, 0x49,
 	0x15, 0x76, 0x3b, 0x5e, 0xc7, 0x7e, 0x4e, 0xe2, 0xa4, 0x26, 0x33, 0xeb, 0x98, 0xc1, 0xed, 0x6d,
 	0x56, 0x4b, 0x40, 0xbb, 0x0e, 0x93, 0x45, 0x8b, 0xc8, 0x05, 0xc6, 0x71, 0x86, 0x58, 0xbb, 0x0c,
@@ -1260,7 +1260,7 @@ func (this *Pool) Description() (desc *github_com_gogo_protobuf_protoc_gen_gogo_
 func StakingDescription() (desc *github_com_gogo_protobuf_protoc_gen_gogo_descriptor.FileDescriptorSet) {
 	d := &github_com_gogo_protobuf_protoc_gen_gogo_descriptor.FileDescriptorSet{}
 	var gzipped = []byte{
-
+		
 		0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x7d, 0x6d, 0x70, 0x5c, 0xd7,
 		0x75, 0x18, 0xde, 0x7e, 0x00, 0xbb, 0x07, 0x0b, 0x60, 0x71, 0x01, 0x92, 0xcb, 0x25, 0x09, 0x40,
 		0x4f, 0x5f, 0x14, 0x25, 0x81, 0x12, 0x25, 0x52, 0xd2, 0x32, 0xb6, 0xbc, 0x8b, 0x5d, 0x82, 0x10,

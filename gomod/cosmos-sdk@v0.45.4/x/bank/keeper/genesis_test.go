@@ -18,7 +18,7 @@ func (suite *IntegrationTestSuite) TestExportGenesis() {
 		if err1 != nil {
 			panic(err1)
 		}
-
+		
 		suite.
 			Require().
 			NoError(app.BankKeeper.MintCoins(ctx, minttypes.ModuleName, expectedBalances[i].Coins))
@@ -65,7 +65,7 @@ func (suite *IntegrationTestSuite) TestInitGenesis() {
 }
 
 func (suite *IntegrationTestSuite) TestTotalSupply() {
-
+	
 	defaultGenesis := types.DefaultGenesisState()
 	balances := []types.Balance{
 		{Coins: sdk.NewCoins(sdk.NewCoin("foocoin", sdk.NewInt(1))), Address: "cosmos1f9xjhxm0plzrh9cskf4qee4pc2xwp0n0556gh0"},

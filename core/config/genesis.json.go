@@ -138,6 +138,15 @@ var GenesisJson = `
           "current_epoch_start_time": "0001-01-01T00:00:00Z",
           "epoch_counting_started": false,
           "current_epoch_start_height": "0"
+        },
+ 		{
+          "identifier": "hour",
+          "start_time": "0001-01-01T00:00:00Z",
+          "duration": "86400s",
+          "current_epoch": "0",
+          "current_epoch_start_time": "0001-01-01T00:00:00Z",
+          "epoch_counting_started": false,
+          "current_epoch_start_height": "0"
         }
       ]
     },

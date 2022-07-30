@@ -56,13 +56,13 @@ func TestTrackHistoricalInfo(t *testing.T) {
 	addrDels := simapp.AddTestAddrsIncremental(app, ctx, 50, sdk.NewInt(0))
 	addrVals := simapp.ConvertAddrsToValAddrs(addrDels)
 
-
+	
 	params := types.DefaultParams()
 	params.HistoricalEntries = 5
 	app.StakingKeeper.SetParams(ctx, params)
 
-
-
+	
+	
 	h4 := tmproto.Header{
 		ChainID: "HelloChain",
 		Height:  4,
@@ -86,9 +86,9 @@ func TestTrackHistoricalInfo(t *testing.T) {
 	require.True(t, found)
 	require.Equal(t, hi5, recv)
 
-
+	
 	val1 := teststaking.NewValidator(t, addrVals[2], PKs[2])
-	val1.Status = types.Bonded
+	val1.Status = types.Bonded 
 	val1.Tokens = app.StakingKeeper.TokensFromConsensusPower(ctx, 10)
 	app.StakingKeeper.SetValidator(ctx, val1)
 	app.StakingKeeper.SetLastValidatorPower(ctx, val1.GetOperator(), 10)
@@ -101,7 +101,7 @@ func TestTrackHistoricalInfo(t *testing.T) {
 	vals := []types.Validator{val1, val2}
 	IsValSetSorted(vals, app.StakingKeeper.PowerReduction(ctx))
 
-
+	
 	header := tmproto.Header{
 		ChainID: "HelloChain",
 		Height:  10,
@@ -110,7 +110,7 @@ func TestTrackHistoricalInfo(t *testing.T) {
 
 	app.StakingKeeper.TrackHistoricalInfo(ctx)
 
-
+	
 	expected := types.HistoricalInfo{
 		Header: header,
 		Valset: vals,
@@ -119,7 +119,7 @@ func TestTrackHistoricalInfo(t *testing.T) {
 	require.True(t, found, "GetHistoricalInfo failed after BeginBlock")
 	require.Equal(t, expected, recv, "GetHistoricalInfo returned unexpected result")
 
-
+	
 	recv, found = app.StakingKeeper.GetHistoricalInfo(ctx, 4)
 	require.False(t, found, "GetHistoricalInfo did not prune earlier height")
 	require.Equal(t, types.HistoricalInfo{}, recv, "GetHistoricalInfo at height 4 is not empty after prune")

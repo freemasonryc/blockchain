@@ -7,13 +7,13 @@ import (
 
 
 const (
-
+	
 	ModuleName     = "chat"
 	ModuleBurnName = "chat_burn"
-
+	
 	StoreKey = ModuleName
 
-
+	
 	RouterKey = ModuleName
 )
 
@@ -26,5 +26,16 @@ func init() {
 
 
 const (
+	
+	MobileSuffixLength = 5 
+
+	
+	MobileSuffixMax = 99999
+
 	KeyPrefixRegisterInfo = "chat_register_info_"
+
+	KeyPrefixLastGetRewardLog = "chat_last_get_reward_log_"
+
+	
+	KeyPrefixMortgageAddLog = "chat_mortgage_add_log_"
 )

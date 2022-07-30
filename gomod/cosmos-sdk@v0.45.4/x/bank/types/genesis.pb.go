@@ -23,18 +23,18 @@ var _ = math.Inf
 
 
 
-const _ = proto.GoGoProtoPackageIsVersion3
+const _ = proto.GoGoProtoPackageIsVersion3 
 
 
 type GenesisState struct {
-
+	
 	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
-
+	
 	Balances []Balance `protobuf:"bytes,2,rep,name=balances,proto3" json:"balances"`
-
-
+	
+	
 	Supply github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,3,rep,name=supply,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"supply"`
-
+	
 	DenomMetadata []Metadata `protobuf:"bytes,4,rep,name=denom_metadata,json=denomMetadata,proto3" json:"denom_metadata" yaml:"denom_metadata"`
 }
 
@@ -102,9 +102,9 @@ func (m *GenesisState) GetDenomMetadata() []Metadata {
 
 
 type Balance struct {
-
+	
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-
+	
 	Coins github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,2,rep,name=coins,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"coins"`
 }
 
@@ -149,7 +149,7 @@ func init() {
 func init() { proto.RegisterFile("cosmos/bank/v1beta1/genesis.proto", fileDescriptor_8f007de11b420c6e) }
 
 var fileDescriptor_8f007de11b420c6e = []byte{
-
+	
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x92, 0x3f, 0x4f, 0xc2, 0x40,
 	0x18, 0x87, 0x5b, 0x40, 0xc0, 0x43, 0x1d, 0xaa, 0x26, 0x15, 0xa5, 0xc5, 0x4e, 0x38, 0xd8, 0x0a,
 	0x4e, 0x32, 0x38, 0x94, 0xc1, 0xc9, 0xc4, 0xd4, 0xcd, 0xc5, 0x5c, 0xdb, 0x4b, 0x6d, 0xa0, 0xbd,

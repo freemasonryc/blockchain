@@ -35,16 +35,16 @@ func TestMigrate(t *testing.T) {
 	bz, err := clientCtx.Codec.MarshalJSON(migrated)
 	require.NoError(t, err)
 
-
+	
 	var jsonObj map[string]interface{}
 	err = json.Unmarshal(bz, &jsonObj)
 	require.NoError(t, err)
 	indentedBz, err := json.MarshalIndent(jsonObj, "", "  ")
 	require.NoError(t, err)
 
-
-
-
+	
+	
+	
 	expected := `{
   "delegations": [],
   "exported": false,

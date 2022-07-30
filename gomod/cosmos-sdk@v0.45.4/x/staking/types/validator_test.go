@@ -86,11 +86,11 @@ func TestShareTokens(t *testing.T) {
 func TestRemoveTokens(t *testing.T) {
 	validator := mkValidator(100, sdk.NewDec(100))
 
-
+	
 	validator = validator.RemoveTokens(sdk.NewInt(10))
 	require.Equal(t, int64(90), validator.Tokens.Int64())
 
-
+	
 	validator = validator.UpdateStatus(types.Unbonded)
 	require.Equal(t, types.Unbonded, validator.Status)
 
@@ -142,13 +142,13 @@ func TestRemoveDelShares(t *testing.T) {
 		DelegatorShares: sdk.NewDec(100),
 	}
 
-
+	
 	valB, coinsB := valA.RemoveDelShares(sdk.NewDec(10))
 	require.Equal(t, int64(10), coinsB.Int64())
 	require.Equal(t, int64(90), valB.DelegatorShares.RoundInt64())
 	require.Equal(t, int64(90), valB.BondedTokens().Int64())
 
-
+	
 	validator := mkValidator(5102, sdk.NewDec(115))
 	_, tokens := validator.RemoveDelShares(sdk.NewDec(29))
 
@@ -175,15 +175,15 @@ func TestUpdateStatus(t *testing.T) {
 	require.Equal(t, types.Unbonded, validator.Status)
 	require.Equal(t, int64(100), validator.Tokens.Int64())
 
-
+	
 	validator = validator.UpdateStatus(types.Bonded)
 	require.Equal(t, types.Bonded, validator.Status)
 
-
+	
 	validator = validator.UpdateStatus(types.Unbonding)
 	require.Equal(t, types.Unbonding, validator.Status)
 
-
+	
 	validator = validator.UpdateStatus(types.Bonded)
 	require.Equal(t, types.Bonded, validator.Status)
 }
@@ -248,17 +248,17 @@ func TestValidatorsSortDeterminism(t *testing.T) {
 	vals := make([]types.Validator, 10)
 	sortedVals := make([]types.Validator, 10)
 
-
+	
 	for i := range vals {
 		pk := ed25519.GenPrivKey().PubKey()
 		vals[i] = newValidator(t, sdk.ValAddress(pk.Address()), pk)
 	}
 
-
+	
 	sort.Sort(types.Validators(vals))
 	copy(sortedVals, vals)
 
-
+	
 	for i := 0; i < 10; i++ {
 		rand.Shuffle(10, func(i, j int) {
 			it := vals[i]
@@ -282,19 +282,19 @@ func TestValidatorsSortTendermint(t *testing.T) {
 		vals[i].Status = types.Bonded
 		vals[i].Tokens = sdk.NewInt(rand.Int63())
 	}
-
+	
 	for i := 0; i < 10; i++ {
 		vals[i].Tokens = sdk.NewInt(1000000)
 	}
 
 	valz := types.Validators(vals)
 
-
+	
 	expectedVals, err := teststaking.ToTmValidators(valz, sdk.DefaultPowerReduction)
 	require.NoError(t, err)
 	sort.Sort(tmtypes.ValidatorsByVotingPower(expectedVals))
 
-
+	
 	sort.SliceStable(valz, func(i, j int) bool {
 		return types.ValidatorsByVotingPower(valz).Less(i, j, sdk.DefaultPowerReduction)
 	})

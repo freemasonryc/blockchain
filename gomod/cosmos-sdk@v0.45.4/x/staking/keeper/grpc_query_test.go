@@ -548,7 +548,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryPoolParameters() {
 	app, ctx, queryClient := suite.app, suite.ctx, suite.queryClient
 	bondDenom := sdk.DefaultBondDenom
 
-
+	
 	res, err := queryClient.Pool(gocontext.Background(), &types.QueryPoolRequest{})
 	suite.NoError(err)
 	bondedPool := app.StakingKeeper.GetBondedPool(ctx)
@@ -556,7 +556,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryPoolParameters() {
 	suite.Equal(app.BankKeeper.GetBalance(ctx, notBondedPool.GetAddress(), bondDenom).Amount, res.Pool.NotBondedTokens)
 	suite.Equal(app.BankKeeper.GetBalance(ctx, bondedPool.GetAddress(), bondDenom).Amount, res.Pool.BondedTokens)
 
-
+	
 	resp, err := queryClient.Params(gocontext.Background(), &types.QueryParamsRequest{})
 	suite.NoError(err)
 	suite.Equal(app.StakingKeeper.GetParams(ctx), resp.Params)
@@ -722,7 +722,7 @@ func (suite *KeeperTestSuite) TestGRPCQueryValidatorUnbondingDelegations() {
 	addrAcc1, _ := addrs[0], addrs[1]
 	val1 := vals[0]
 
-
+	
 	undelAmount := app.StakingKeeper.TokensFromConsensusPower(ctx, 2)
 	_, err := app.StakingKeeper.Undelegate(ctx, addrAcc1, val1.GetOperator(), undelAmount.ToDec())
 	suite.NoError(err)

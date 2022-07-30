@@ -53,7 +53,7 @@ func TestValidateBasic(t *testing.T) {
 	err := types.ValidateBasic(hi)
 	require.Error(t, err, "ValidateBasic passed on nil ValSet")
 
-
+	
 	for sort.IsSorted(types.Validators(validators)) {
 		rand.Shuffle(len(validators), func(i, j int) {
 			it := validators[i]

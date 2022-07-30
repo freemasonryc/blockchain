@@ -76,7 +76,7 @@ func (k BaseViewKeeper) GetAccountsBalances(ctx sdk.Context) []types.Balance {
 	k.IterateAllBalances(ctx, func(addr sdk.AccAddress, balance sdk.Coin) bool {
 		idx, ok := mapAddressToBalancesIdx[addr.String()]
 		if ok {
-
+			
 			balances[idx].Coins = balances[idx].Coins.Add(balance)
 			balances[idx].Coins.Sort()
 			return false
@@ -143,8 +143,8 @@ func (k BaseViewKeeper) IterateAllBalances(ctx sdk.Context, cb func(sdk.AccAddre
 		address, err := types.AddressFromBalancesStore(iterator.Key())
 		if err != nil {
 			k.Logger(ctx).With("key", iterator.Key(), "err", err).Error("failed to get address from balances store")
-
-
+			
+			
 			panic(err)
 		}
 

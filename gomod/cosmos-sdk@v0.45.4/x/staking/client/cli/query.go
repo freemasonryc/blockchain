@@ -115,7 +115,7 @@ $ %s query staking validators
 			}
 
 			result, err := queryClient.Validators(cmd.Context(), &types.QueryValidatorsRequest{
-
+				
 				Pagination: pageReq,
 			})
 			if err != nil {

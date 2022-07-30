@@ -1,7 +1,9 @@
 package config
 
+import "freemasonry.cc/blockchain/core"
+
 var AppToml = `
-minimum-gas-prices = "0afsv"
+minimum-gas-prices = "0att"
 pruning = "default"
 pruning-keep-recent = "0"
 pruning-keep-every = "0"

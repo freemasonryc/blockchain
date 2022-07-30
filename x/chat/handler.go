@@ -28,6 +28,12 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgSendGift:
 			res, err := msgServer.SendGift(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgAddressBookSave:
+			res, err := msgServer.AddressBookSave(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgGetRewards:
+			res, err := msgServer.GetRewards(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			err := sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized %s message type: %T", types.ModuleName, msg)
 			return nil, err

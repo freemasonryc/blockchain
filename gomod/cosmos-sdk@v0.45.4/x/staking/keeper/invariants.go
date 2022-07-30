@@ -75,8 +75,8 @@ func ModuleAccountInvariants(k Keeper) sdk.Invariant {
 		poolNotBonded := k.bankKeeper.GetBalance(ctx, notBondedPool.GetAddress(), bondDenom)
 		broken := !poolBonded.Amount.Equal(bonded) || !poolNotBonded.Amount.Equal(notBonded)
 
-
-
+		
+		
 		return sdk.FormatInvariant(types.ModuleName, "bonded and not bonded module account coins", fmt.Sprintf(
 			"\tPool's bonded tokens: %v\n"+
 				"\tsum of bonded tokens: %v\n"+

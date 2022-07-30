@@ -10,15 +10,15 @@ import (
 	"freemasonry.cc/blockchain/core"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	cmssecp256k1 "github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"github.com/shopspring/decimal"
-	"github.com/tendermint/tendermint/crypto/secp256k1"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	ttypes "github.com/tendermint/tendermint/types"
+	evmhd "github.com/tharsis/ethermint/crypto/hd"
 	"regexp"
 	"strconv"
 )
@@ -48,7 +48,7 @@ type TxClient struct {
 func (this *TxClient) ConvertTxToStdTx(cosmosTx sdk.Tx) (*legacytx.StdTx, error) {
 	signingTx, ok := cosmosTx.(xauthsigning.Tx)
 	if !ok {
-		return nil, errors.New("tx转stdtx失败")
+		return nil, errors.New("tx to stdtx error")
 	}
 	stdTx, err := tx.ConvertTxToStdTx(clientCtx.LegacyAmino, signingTx)
 	if err != nil {
@@ -139,14 +139,21 @@ func (this *TxClient) SignAndSendMsg(address string, privateKey string, fee lega
 	}
 
 	
-	signPubkeyBytes, err := signedTx.GetPubKeys()
+	signPubkey, err := signedTx.GetPubKeys()
 	if err != nil {
 		return
 	}
-	senderPubkeyBytes := signedTx.GetSigners()[0].Bytes()
-	if !bytes.Equal(signPubkeyBytes[0].Address().Bytes(), senderPubkeyBytes) {
+
+	signV2, _ := signedTx.GetSignaturesV2()
+	senderAddrBytes := signV2[0].PubKey.Address().Bytes()
+	signAddrBytes := signPubkey[0].Address().Bytes()
+	
+	
+
+	if !bytes.Equal(signAddrBytes, senderAddrBytes) {
 		return nil, errors.New("sign error")
 	}
+	
 
 	
 	signedTxBytes, err := this.SignTx2Bytes(signedTx)
@@ -154,7 +161,7 @@ func (this *TxClient) SignAndSendMsg(address string, privateKey string, fee lega
 		log.WithError(err).Error("SignTx2Bytes")
 		return
 	}
-
+	
 	
 	txRes, err = this.Send(signedTxBytes)
 	if txRes != nil {
@@ -164,7 +171,7 @@ func (this *TxClient) SignAndSendMsg(address string, privateKey string, fee lega
 }
 
 
-func (this *TxClient) FindAccountNumberSeq(accountAddr string) (detail core.AccountNumberSeqResponse, err error) {
+func (this *TxClient) FindAccountNumberSeq(accountAddr string) (detail core.ChainAccountNumberSeqResponse, err error) {
 	log := core.BuildLog(core.GetStructFuncName(this), core.LmChainClient)
 	reponse, err := GetRequest(this.ServerUrl, "/copyright/accountNumberSeq/"+accountAddr)
 	if err != nil {
@@ -196,13 +203,18 @@ func (this *TxClient) Send(req []byte) (txRes *core.BroadcastTxResponse, err err
 }
 
 
-func (this *TxClient) GasInfo(seqDetail core.AccountNumberSeqResponse, msg ...sdk.Msg) (coin core.RealCoin, gas uint64, err error) {
+func (this *TxClient) GasInfo(seqDetail core.ChainAccountNumberSeqResponse, msg ...sdk.Msg) (coin core.RealCoin, gas uint64, err error) {
 	log := core.BuildLog(core.GetFuncName(), core.LmChainClient)
+	/*seqDetail, err := this.FindAccountNumberSeq(msg.GetSigners()[0].String())
+	  if err != nil {
+	  	return
+	  }*/
+
 	
-	if seqDetail.NotFound {
-		err = errors.New("There is no such account on the chain")
-		return
-	}
+	
+	
+	
+
 	clientFactory = clientFactory.WithSequence(seqDetail.Sequence)
 	gasInfo, _, err := tx.CalculateGas(clientCtx, clientFactory, msg...)
 	if err != nil {
@@ -229,16 +241,19 @@ func (this *TxClient) GasInfo(seqDetail core.AccountNumberSeqResponse, msg ...sd
 }
 
 
-func (this *TxClient) SignTx(privateKey string, seqDetail core.AccountNumberSeqResponse, fee legacytx.StdFee, memo string, msgs ...sdk.Msg) (xauthsigning.Tx, error) {
+func (this *TxClient) SignTx(privateKey string, seqDetail core.ChainAccountNumberSeqResponse, fee legacytx.StdFee, memo string, msgs ...sdk.Msg) (xauthsigning.Tx, error) {
 	log := core.BuildLog(core.GetStructFuncName(this), core.LmChainClient)
-	var privkey secp256k1.PrivKey
 	privKeyBytes, err := hex.DecodeString(privateKey)
 	if err != nil {
 		log.WithError(err).Error("hex.DecodeString")
 		return nil, err
 	}
-	privkey = privKeyBytes
-	privkey1 := cmssecp256k1.PrivKey{Key: privkey}
+	keyringAlgos := keyring.SigningAlgoList{evmhd.EthSecp256k1}
+	algo, err := keyring.NewSigningAlgoFromString("eth_secp256k1", keyringAlgos)
+	if err != nil {
+		return nil, err
+	}
+	privKey := algo.Generate()(privKeyBytes)
 	
 	if fee.Gas == flags.DefaultGasLimit {
 		_, gas, err := this.GasInfo(seqDetail, msgs...)
@@ -268,7 +283,7 @@ func (this *TxClient) SignTx(privateKey string, seqDetail core.AccountNumberSeqR
 		Signature: nil,
 	}
 	sig := signing.SignatureV2{
-		PubKey:   privkey1.PubKey(),
+		PubKey:   privKey.PubKey(),
 		Data:     &sigData,
 		Sequence: seqDetail.Sequence,
 	}
@@ -277,7 +292,7 @@ func (this *TxClient) SignTx(privateKey string, seqDetail core.AccountNumberSeqR
 		log.WithError(err).Error("SetSignatures")
 		return nil, err
 	}
-	signV2, err := tx.SignWithPrivKey(signMode, signerData, txBuild, &privkey1, clientCtx.TxConfig, seqDetail.Sequence)
+	signV2, err := tx.SignWithPrivKey(signMode, signerData, txBuild, privKey, clientCtx.TxConfig, seqDetail.Sequence)
 	if err != nil {
 		log.WithError(err).Error("SignWithPrivKey")
 		return nil, err
@@ -289,5 +304,6 @@ func (this *TxClient) SignTx(privateKey string, seqDetail core.AccountNumberSeqR
 	}
 
 	signedTx := txBuild.GetTx()
+	
 	return signedTx, nil
 }

@@ -243,7 +243,7 @@ func TestMarshalJSONMetaData(t *testing.T) {
 		{"non-empty coins", []types.Metadata{{
 			Description: "The native staking token of the Cosmos Hub.",
 			DenomUnits: []*types.DenomUnit{
-				{"uatom", uint32(0), []string{"microatom"}},
+				{"uatom", uint32(0), []string{"microatom"}}, 
 				{"matom", uint32(3), []string{"milliatom"}},
 				{"atom", uint32(6), nil},
 			},

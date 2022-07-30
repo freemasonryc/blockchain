@@ -16,11 +16,12 @@ const (
 	EventTypeBurn                  = "burn"
 	EventTypeRegisterCoin          = "register_coin"
 	EventTypeRegisterERC20         = "register_erc20"
-	EventTypeToggleTokenConversion = "toggle_token_conversion"
+	EventTypeToggleTokenConversion = "toggle_token_conversion" 
 
-	AttributeKeyCosmosCoin = "cosmos_coin"
-	AttributeKeyERC20Token = "erc20_token"
-	AttributeKeyReceiver   = "receiver"
+	AttributeKeyCosmosCoin   = "cosmos_coin"
+	AttributeKeyERC20Token   = "erc20_token" 
+	AttributeKeyReceiver     = "receiver"
+	AttributeKeyReturnAmount = "return_amount"
 
 	ERC20EventTransfer = "Transfer"
 )

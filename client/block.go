@@ -47,7 +47,7 @@ func (this *BlockClient) Block(height int64) (blockData *coretypes.ResultBlock, 
 		log.WithError(err).Error("GetNode")
 		return nil, err
 	}
-
+	
 	return node.Block(context.Background(), &height)
 }
 
@@ -70,7 +70,7 @@ func (this *BlockClient) Find(height int64) (blockData *Block, err error) {
 		height = nodeStatus.SyncInfo.LatestBlockHeight
 	}
 
-
+	
 	blockInfo, err := node.Block(context.Background(), &height)
 	if err != nil {
 		log.WithError(err).Error("node.Block")

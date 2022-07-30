@@ -10,14 +10,14 @@ import (
 )
 
 const (
-
+	
 	DefaultSendEnabled = true
 )
 
 var (
-
+	
 	KeySendEnabled = []byte("SendEnabled")
-
+	
 	KeyDefaultSendEnabled = []byte("DefaultSendEnabled")
 )
 
@@ -38,7 +38,7 @@ func NewParams(defaultSendEnabled bool, sendEnabledParams SendEnabledParams) Par
 func DefaultParams() Params {
 	return Params{
 		SendEnabled: SendEnabledParams{},
-
+		
 		DefaultSendEnabled: true,
 	}
 }
@@ -96,7 +96,7 @@ func validateSendEnabledParams(i interface{}) error {
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
-
+	
 	registered := make(map[string]bool)
 	for _, p := range params {
 		if _, exists := registered[p.Denom]; exists {

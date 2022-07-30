@@ -29,28 +29,28 @@ func registerTxHandlers(clientCtx client.Context, r *mux.Router) {
 }
 
 type (
-
+	
 	DelegateRequest struct {
 		BaseReq          rest.BaseReq   `json:"base_req" yaml:"base_req"`
-		DelegatorAddress sdk.AccAddress `json:"delegator_address" yaml:"delegator_address"`
-		ValidatorAddress sdk.ValAddress `json:"validator_address" yaml:"validator_address"`
+		DelegatorAddress sdk.AccAddress `json:"delegator_address" yaml:"delegator_address"` 
+		ValidatorAddress sdk.ValAddress `json:"validator_address" yaml:"validator_address"` 
 		Amount           sdk.Coin       `json:"amount" yaml:"amount"`
 	}
 
-
+	
 	RedelegateRequest struct {
 		BaseReq             rest.BaseReq   `json:"base_req" yaml:"base_req"`
-		DelegatorAddress    sdk.AccAddress `json:"delegator_address" yaml:"delegator_address"`
-		ValidatorSrcAddress sdk.ValAddress `json:"validator_src_address" yaml:"validator_src_address"`
-		ValidatorDstAddress sdk.ValAddress `json:"validator_dst_address" yaml:"validator_dst_address"`
+		DelegatorAddress    sdk.AccAddress `json:"delegator_address" yaml:"delegator_address"`         
+		ValidatorSrcAddress sdk.ValAddress `json:"validator_src_address" yaml:"validator_src_address"` 
+		ValidatorDstAddress sdk.ValAddress `json:"validator_dst_address" yaml:"validator_dst_address"` 
 		Amount              sdk.Coin       `json:"amount" yaml:"amount"`
 	}
 
-
+	
 	UndelegateRequest struct {
 		BaseReq          rest.BaseReq   `json:"base_req" yaml:"base_req"`
-		DelegatorAddress sdk.AccAddress `json:"delegator_address" yaml:"delegator_address"`
-		ValidatorAddress sdk.ValAddress `json:"validator_address" yaml:"validator_address"`
+		DelegatorAddress sdk.AccAddress `json:"delegator_address" yaml:"delegator_address"` 
+		ValidatorAddress sdk.ValAddress `json:"validator_address" yaml:"validator_address"` 
 		Amount           sdk.Coin       `json:"amount" yaml:"amount"`
 	}
 )

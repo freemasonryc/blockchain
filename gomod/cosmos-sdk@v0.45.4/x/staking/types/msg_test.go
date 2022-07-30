@@ -25,7 +25,7 @@ func TestMsgDecode(t *testing.T) {
 	types.RegisterInterfaces(registry)
 	cdc := codec.NewProtoCodec(registry)
 
-
+	
 
 	pk1bz, err := cdc.MarshalInterface(pk1)
 	require.NoError(t, err)
@@ -34,7 +34,7 @@ func TestMsgDecode(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, pk1.Equals(pkUnmarshaled.(*ed25519.PubKey)))
 
-
+	
 
 	commission1 := types.NewCommissionRates(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec())
 	msg, err := types.NewMsgCreateValidator(valAddr1, pk1, coinPos, types.Description{}, commission1, sdk.OneInt())

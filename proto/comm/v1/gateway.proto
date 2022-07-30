@@ -1,0 +1,31 @@
+syntax = "proto3";
+package freemasonry.comm.v1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "freemasonry.cc/blockchain/x/comm/types";
+
+// 定义comm模块的参数
+message Params {
+  option (gogoproto.equal)            = true;
+  option (gogoproto.marshaler) = true;
+  option (gogoproto.unmarshaler) = true;
+  option (gogoproto.sizer) = true;
+
+  //号码段赎回到期检查高度
+  int64 index_num_height = 1;
+  //额外手续费赎回期
+  int64 redeem_fee_height = 2;
+  //赎回手续费额外比例
+  string redeem_fee = 3 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable)   = false];
+  //获得号码段最小质押金额
+  string min_delegate = 4 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",(gogoproto.nullable) = false ];
+  //号码段有效保护期
+  int64 validity = 5;
+  //分红周期
+  int64 bonus_cycle = 6;
+  //分红减半周期
+  int64 bonus_halve = 7;
+  //周期内分红数量
+  string bonus = 8 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",(gogoproto.nullable) = false ];
+}

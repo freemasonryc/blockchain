@@ -2,6 +2,7 @@ package rest
 
 import (
 	"errors"
+	"freemasonry.cc/blockchain/core"
 	"freemasonry.cc/blockchain/util"
 	types2 "freemasonry.cc/blockchain/x/chat/types"
 	"freemasonry.cc/trerr"
@@ -19,6 +20,8 @@ import (
 
 func BroadcastTxHandlerFn(clientCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		log := core.BuildLog("BroadcastTxHandlerFn", core.LmChainRest)
+
 		var txBytes []byte
 		if r.Body != nil {
 			txBytes, _ = ioutil.ReadAll(r.Body)
@@ -39,6 +42,9 @@ func BroadcastTxHandlerFn(clientCtx client.Context) http.HandlerFunc {
 		msgs := stdTx.GetMsgs() 
 		fee := stdTx.Fee        
 		memo := stdTx.Memo      
+
+		log.Info("")
+
 		
 		err = broadcastMsgCheck(msgs, fee, memo)
 		if err != nil {
@@ -47,6 +53,7 @@ func BroadcastTxHandlerFn(clientCtx client.Context) http.HandlerFunc {
 			SendReponse(w, clientCtx, txResponse)
 			return
 		}
+
 		res, err := clientCtx.BroadcastTx(txBytes)
 		if err != nil {
 			txResponse.Info = err.Error()
@@ -105,7 +112,7 @@ func broadcastMsgCheck(msgs []sdk.Msg, fee legacytx.StdFee, memo string) (err er
 func txToStdTx(clientCtx client.Context, tx sdk.Tx) (*legacytx.StdTx, error) {
 	signingTx, ok := tx.(signing.Tx)
 	if !ok {
-		return nil, errors.New("tx转stdtx失败")
+		return nil, errors.New("tx to stdtx error")
 	}
 	stdTx, err := clienttx.ConvertTxToStdTx(clientCtx.LegacyAmino, signingTx)
 	if err != nil {

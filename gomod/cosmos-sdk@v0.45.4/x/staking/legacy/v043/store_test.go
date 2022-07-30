@@ -31,7 +31,7 @@ func TestStoreMigration(t *testing.T) {
 	consAddr := sdk.ConsAddress(addr3.String())
 	_, _, addr4 := testdata.KeyTestPubAddr()
 	now := time.Now()
-
+	
 	value := []byte("foo")
 
 	testCases := []struct {
@@ -116,16 +116,16 @@ func TestStoreMigration(t *testing.T) {
 		},
 	}
 
-
+	
 	for _, tc := range testCases {
 		store.Set(tc.oldKey, value)
 	}
 
-
+	
 	err := v043staking.MigrateStore(ctx, stakingKey)
 	require.NoError(t, err)
 
-
+	
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {

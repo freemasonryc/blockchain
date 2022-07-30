@@ -19,4 +19,8 @@ const (
 	AttributeKeyCompletionTime    = "completion_time"
 	AttributeKeyNewShares         = "new_shares"
 	AttributeValueCategory        = ModuleName
+
+	EventTypeSlashAmount         = "slash_amount"
+	AttributeKeyDelegatorAddr    = "delegatorAddress"
+	AttributeKeyDelegatorBalance = "delegator_balance"
 )

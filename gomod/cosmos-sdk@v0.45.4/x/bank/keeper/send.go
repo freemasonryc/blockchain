@@ -38,7 +38,7 @@ type BaseSendKeeper struct {
 	storeKey   sdk.StoreKey
 	paramSpace paramtypes.Subspace
 
-
+	
 	blockedAddrs map[string]bool
 }
 
@@ -71,8 +71,8 @@ func (k BaseSendKeeper) SetParams(ctx sdk.Context, params types.Params) {
 
 
 func (k BaseSendKeeper) InputOutputCoins(ctx sdk.Context, inputs []types.Input, outputs []types.Output) error {
-
-
+	
+	
 	if err := types.ValidateInputsOutputs(inputs, outputs); err != nil {
 		return err
 	}
@@ -114,10 +114,10 @@ func (k BaseSendKeeper) InputOutputCoins(ctx sdk.Context, inputs []types.Input, 
 			),
 		)
 
-
+		
 		//
-
-
+		
+		
 		accExists := k.ak.HasAccount(ctx, outAddress)
 		if !accExists {
 			defer telemetry.IncrCounter(1, "new", "account")
@@ -141,15 +141,20 @@ func (k BaseSendKeeper) SendCoins(ctx sdk.Context, fromAddr sdk.AccAddress, toAd
 		return err
 	}
 
-
+	
 	//
-
-
+	
+	
 	accExists := k.ak.HasAccount(ctx, toAddr)
 	if !accExists {
 		defer telemetry.IncrCounter(1, "new", "account")
 		k.ak.SetAccount(ctx, k.ak.NewAccountWithAddress(ctx, toAddr))
 	}
+
+	
+	fromAddrBalance := k.GetAllBalances(ctx, fromAddr)
+
+	toAddrBalance := k.GetAllBalances(ctx, toAddr)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
@@ -157,6 +162,8 @@ func (k BaseSendKeeper) SendCoins(ctx sdk.Context, fromAddr sdk.AccAddress, toAd
 			sdk.NewAttribute(types.AttributeKeyRecipient, toAddr.String()),
 			sdk.NewAttribute(types.AttributeKeySender, fromAddr.String()),
 			sdk.NewAttribute(sdk.AttributeKeyAmount, amt.String()),
+			sdk.NewAttribute(types.AttributeKeyRecipientBalance, toAddrBalance.String()),
+			sdk.NewAttribute(types.AttributeKeySenderBalance, fromAddrBalance.String()),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
@@ -195,7 +202,7 @@ func (k BaseSendKeeper) subUnlockedCoins(ctx sdk.Context, addr sdk.AccAddress, a
 		}
 	}
 
-
+	
 	ctx.EventManager().EmitEvent(
 		types.NewCoinSpentEvent(addr, amt),
 	)
@@ -219,7 +226,7 @@ func (k BaseSendKeeper) addCoins(ctx sdk.Context, addr sdk.AccAddress, amt sdk.C
 		}
 	}
 
-
+	
 	ctx.EventManager().EmitEvent(
 		types.NewCoinReceivedEvent(addr, amt),
 	)
@@ -237,7 +244,7 @@ func (k BaseSendKeeper) initBalances(ctx sdk.Context, addr sdk.AccAddress, balan
 			return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, balance.String())
 		}
 
-
+		
 		if !balance.IsZero() {
 			bz := k.cdc.MustMarshal(&balance)
 			accountStore.Set([]byte(balance.Denom), bz)
@@ -255,7 +262,7 @@ func (k BaseSendKeeper) setBalance(ctx sdk.Context, addr sdk.AccAddress, balance
 
 	accountStore := k.getAccountStore(ctx, addr)
 
-
+	
 	if balance.IsZero() {
 		accountStore.Delete([]byte(balance.Denom))
 	} else {

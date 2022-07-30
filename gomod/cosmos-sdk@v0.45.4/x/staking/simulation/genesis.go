@@ -38,7 +38,7 @@ func getHistEntries(r *rand.Rand) uint32 {
 
 
 func RandomizedGenState(simState *module.SimulationState) {
-
+	
 	var (
 		unbondTime  time.Duration
 		maxVals     uint32
@@ -60,12 +60,12 @@ func RandomizedGenState(simState *module.SimulationState) {
 		func(r *rand.Rand) { histEntries = getHistEntries(r) },
 	)
 
-
-
+	
+	
 	simState.UnbondTime = unbondTime
 	params := types.NewParams(simState.UnbondTime, maxVals, 7, histEntries, sdk.DefaultBondDenom)
 
-
+	
 	var (
 		validators  []types.Validator
 		delegations []types.Delegation

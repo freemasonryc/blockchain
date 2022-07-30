@@ -20,7 +20,7 @@ func (k Keeper) IterateValidators(ctx sdk.Context, fn func(index int64, validato
 
 	for ; iterator.Valid(); iterator.Next() {
 		validator := types.MustUnmarshalValidator(k.cdc, iterator.Value())
-		stop := fn(i, validator)
+		stop := fn(i, validator) 
 
 		if stop {
 			break
@@ -43,7 +43,7 @@ func (k Keeper) IterateBondedValidatorsByPower(ctx sdk.Context, fn func(index in
 		validator := k.mustGetValidator(ctx, address)
 
 		if validator.IsBonded() {
-			stop := fn(i, validator)
+			stop := fn(i, validator) 
 			if stop {
 				break
 			}
@@ -67,7 +67,7 @@ func (k Keeper) IterateLastValidators(ctx sdk.Context, fn func(index int64, vali
 			panic(fmt.Sprintf("validator record not found for address: %v\n", address))
 		}
 
-		stop := fn(i, validator)
+		stop := fn(i, validator) 
 		if stop {
 			break
 		}
@@ -118,7 +118,7 @@ func (k Keeper) IterateDelegations(ctx sdk.Context, delAddr sdk.AccAddress,
 	store := ctx.KVStore(k.storeKey)
 	delegatorPrefixKey := types.GetDelegationsKey(delAddr)
 
-	iterator := sdk.KVStorePrefixIterator(store, delegatorPrefixKey)
+	iterator := sdk.KVStorePrefixIterator(store, delegatorPrefixKey) 
 	defer iterator.Close()
 
 	for i := int64(0); iterator.Valid(); iterator.Next() {

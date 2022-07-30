@@ -103,46 +103,46 @@ func (s *errorsTestSuite) TestErrorIs() {
 			b:      nil,
 			wantIs: false,
 		},
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	}
 	for testName, tc := range cases {
 		s.Require().Equal(tc.wantIs, tc.a.Is(tc.b), testName)
@@ -251,9 +251,9 @@ func ExampleWrap() {
 	err2 := errors.Wrap(ErrInsufficientFunds, "90 is smaller than 100")
 	fmt.Println(err1.Error())
 	fmt.Println(err2.Error())
-
-
-
+	
+	
+	
 }
 
 func ExampleWrapf() {
@@ -261,7 +261,7 @@ func ExampleWrapf() {
 	err2 := errors.Wrap(ErrInsufficientFunds, "90 is smaller than 100")
 	fmt.Println(err1.Error())
 	fmt.Println(err2.Error())
-
-
-
+	
+	
+	
 }

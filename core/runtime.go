@@ -9,12 +9,12 @@ import (
 
 
 func GetStructFuncName(object interface{}) string {
-	structName := reflect.TypeOf(object).String() 
+	structName := reflect.TypeOf(object).String()
 	pc := make([]uintptr, 1)
 	runtime.Callers(2, pc)
 	f := runtime.FuncForPC(pc[0])
 	arry := strings.Split(f.Name(), ".")
-	funcName := arry[len(arry)-1] 
+	funcName := arry[len(arry)-1]
 	return structName + "." + funcName
 }
 
@@ -45,17 +45,17 @@ func GetObjectName(ob interface{}) string {
 	var object reflect.Type
 	if pv1.Kind() == reflect.Ptr {
 		object = pv1.Type().Elem()
-		
+
 	} else {
 		object = reflect.TypeOf(ob)
-		
+
 	}
 	return object.Name()
 }
 
 
 func Errformat(err error) error {
-	
+
 	if strings.Contains(err.Error(), "failed to execute message; message index: 0") {
 		errContent := err.Error()
 		errContent = strings.ReplaceAll(errContent, "rpc error: code = InvalidArgument desc = failed to execute message;", "")

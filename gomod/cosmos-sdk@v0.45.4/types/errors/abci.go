@@ -8,13 +8,13 @@ import (
 )
 
 const (
-
-
+	
+	
 	SuccessABCICode = 0
 
-
-
-
+	
+	
+	
 	internalABCICodespace        = UndefinedCodespace
 	internalABCICode      uint32 = 1
 )
@@ -200,9 +200,9 @@ func Redact(err error) error {
 	if ErrPanic.Is(err) {
 		return errPanicWithMsg
 	}
-	if abciCode(err) == internalABCICode {
-		return errInternal
-	}
+	
+	
+	
 
 	return err
 }
