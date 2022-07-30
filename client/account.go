@@ -27,11 +27,11 @@ type Account struct {
 }
 
 func (this *Account) Print() {
-	fmt.Printf("钱包名称:\t %s \n", this.Name)
-	fmt.Printf("钱包地址:\t %s \n", this.Address)
-	fmt.Printf("类型:\t\t %s \n", this.Type)
-	fmt.Printf("公钥:\t\t %s \n", this.Pubkey)
-	fmt.Printf("助记词:\t\t %s \n", this.Mnemonic)
+	fmt.Printf("Name:\t %s \n", this.Name)
+	fmt.Printf("Address:\t %s \n", this.Address)
+	fmt.Printf("Type:\t\t %s \n", this.Type)
+	fmt.Printf("Pubkey:\t\t %s \n", this.Pubkey)
+	fmt.Printf("Menmonic:\t\t %s \n", this.Mnemonic)
 }
 
 type AccountList struct {
@@ -82,7 +82,7 @@ func (this *AccountClient) FindAccountBalances(accountAddr string, height string
 		log.Error("GetRequest")
 		return
 	}
-	
+
 	var resp = rest.ResponseWithHeight{}
 	err = clientCtx.LegacyAmino.UnmarshalJSON([]byte(reponseStr), &resp)
 	if err != nil {
@@ -95,32 +95,42 @@ func (this *AccountClient) FindAccountBalances(accountAddr string, height string
 		log.Error("UnmarshalJSON2")
 		return
 	}
+
 	coins = core.MustLedgerCoins2RealCoins(ledgerCoins)
+
+	coins = core.RealCoinsBase2Display(coins)
+
 	return
 }
 
 
+func (this *AccountClient) FindAccountBalance(accountAddr string, denom, height string) (realCoins core.RealCoin, err error) {
+	log := core.BuildLog(core.GetStructFuncName(this), core.LmChainClient).WithFields(logrus.Fields{"acc": accountAddr, "denom": denom, "height": height})
+	url := "/bank/balances/" + accountAddr + "?denom=" + denom
+	if height != "" {
+		url += "&height=" + height
+	}
+	reponseStr, err := GetRequest(this.ServerUrl, url)
+	if err != nil {
+		log.Error("GetRequest")
+		return
+	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	var resp = rest.ResponseWithHeight{}
+	err = clientCtx.LegacyAmino.UnmarshalJSON([]byte(reponseStr), &resp)
+	if err != nil {
+		log.Error("UnmarshalJSON1")
+		return
+	}
+	var coin sdk.Coin
+	err = clientCtx.LegacyAmino.UnmarshalJSON(resp.Result, &coin)
+	if err != nil {
+		log.Error("UnmarshalJSON2")
+		return
+	}
+	realCoins = core.MustLedgerCoin2RealCoin(coin)
+	return
+}
 
 func (this *AccountClient) FindBalanceByRpc(accountAddr string, denom string) (realCoins core.RealCoin, err error) {
 	log := core.BuildLog(core.GetStructFuncName(this), core.LmChainClient).WithFields(logrus.Fields{"acc": accountAddr, "denom": denom})

@@ -73,7 +73,7 @@ func (k msgServer) Send(goCtx context.Context, msg *types.MsgSend) (*types.MsgSe
 func (k msgServer) MultiSend(goCtx context.Context, msg *types.MsgMultiSend) (*types.MsgMultiSendResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-
+	
 	for _, in := range msg.Inputs {
 		if err := k.IsSendEnabledCoins(ctx, in.Coins...); err != nil {
 			return nil, err

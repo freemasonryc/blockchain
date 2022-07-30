@@ -450,10 +450,10 @@ type DelegationData struct {
 type DelegationDetail struct {
 	DelegatorAddress          sdk.AccAddress `json:"delegator_address" yaml:"delegator_address"`
 	ValidatorAddress          sdk.ValAddress `json:"validator_address" yaml:"validator_address"`
-	DelegationAmount          string         `json:"delegator_amount" yaml:"delegator_amount"`
-	UnbindingDelegationAmount string         `json:"unbinding_delegation_amount" yaml:"unbinding_delegation_amount"`
-	DelegationShareNumber     string         `json:"delegator_share_number" yaml:"delegator_share_number"`
-	ValidatorShareNumber      string         `json:"validator_share_number" yaml:"validator_share_number"`
+	DelegationAmount          string         `json:"delegator_amount" yaml:"delegator_amount"`                       
+	UnbindingDelegationAmount string         `json:"unbinding_delegation_amount" yaml:"unbinding_delegation_amount"` 
+	DelegationShareNumber     string         `json:"delegator_share_number" yaml:"delegator_share_number"`           
+	ValidatorShareNumber      string         `json:"validator_share_number" yaml:"validator_share_number"`           
 	ValidatorInfor            stakingtypes.Validator
 	ValidatorSingInfo         slashingTypes.ValidatorSigningInfo
 }

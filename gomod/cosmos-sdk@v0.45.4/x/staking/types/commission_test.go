@@ -15,19 +15,19 @@ func TestCommissionValidate(t *testing.T) {
 		input     types.Commission
 		expectErr bool
 	}{
-
+		
 		{types.NewCommission(sdk.ZeroDec(), sdk.MustNewDecFromStr("-1.00"), sdk.ZeroDec()), true},
-
+		
 		{types.NewCommission(sdk.ZeroDec(), sdk.MustNewDecFromStr("2.00"), sdk.ZeroDec()), true},
-
+		
 		{types.NewCommission(sdk.MustNewDecFromStr("-1.00"), sdk.ZeroDec(), sdk.ZeroDec()), true},
-
+		
 		{types.NewCommission(sdk.MustNewDecFromStr("0.75"), sdk.MustNewDecFromStr("0.50"), sdk.ZeroDec()), true},
-
+		
 		{types.NewCommission(sdk.OneDec(), sdk.OneDec(), sdk.MustNewDecFromStr("-1.00")), true},
-
+		
 		{types.NewCommission(sdk.OneDec(), sdk.MustNewDecFromStr("0.75"), sdk.MustNewDecFromStr("0.90")), true},
-
+		
 		{types.NewCommission(sdk.MustNewDecFromStr("0.20"), sdk.OneDec(), sdk.MustNewDecFromStr("0.10")), false},
 	}
 
@@ -48,17 +48,17 @@ func TestCommissionValidateNewRate(t *testing.T) {
 		blockTime time.Time
 		expectErr bool
 	}{
-
+		
 		{c1, sdk.MustNewDecFromStr("0.50"), now, true},
-
+		
 		{c1, sdk.MustNewDecFromStr("-1.00"), now.Add(48 * time.Hour), true},
-
+		
 		{c1, sdk.MustNewDecFromStr("0.90"), now.Add(48 * time.Hour), true},
-
+		
 		{c1, sdk.MustNewDecFromStr("0.60"), now.Add(48 * time.Hour), true},
-
+		
 		{c1, sdk.MustNewDecFromStr("0.50"), now.Add(48 * time.Hour), false},
-
+		
 		{c1, sdk.MustNewDecFromStr("0.10"), now.Add(48 * time.Hour), false},
 	}
 

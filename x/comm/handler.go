@@ -19,8 +19,11 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgGatewayRegister:
 			res, err := msgServer.GatewayRegister(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgAddressBookSave:
-			res, err := msgServer.AddressBookSave(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgGatewayDelegate:
+			res, err := msgServer.GatewayDelegation(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgGatewayUndelegate:
+			res, err := msgServer.GatewayUndelegate(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			err := sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized %s message type: %T", types.ModuleName, msg)

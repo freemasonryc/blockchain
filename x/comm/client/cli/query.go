@@ -18,9 +18,9 @@ func GetQueryCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-	
-	
-	
+
+
+
 	)
 	return cmd
 }

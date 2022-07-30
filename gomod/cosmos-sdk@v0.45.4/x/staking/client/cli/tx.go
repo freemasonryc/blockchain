@@ -308,7 +308,7 @@ func newBuildCreateValidatorMsg(clientCtx client.Context, txf tx.Factory, fs *fl
 		details,
 	)
 
-
+	
 	rateStr, _ := fs.GetString(FlagCommissionRate)
 	maxRateStr, _ := fs.GetString(FlagCommissionMaxRate)
 	maxChangeRateStr, _ := fs.GetString(FlagCommissionMaxChangeRate)
@@ -318,7 +318,7 @@ func newBuildCreateValidatorMsg(clientCtx client.Context, txf tx.Factory, fs *fl
 		return txf, nil, err
 	}
 
-
+	
 	msbStr, _ := fs.GetString(FlagMinSelfDelegation)
 
 	minSelfDelegation, ok := sdk.NewIntFromString(msbStr)
@@ -511,7 +511,7 @@ func BuildCreateValidatorMsg(clientCtx client.Context, config TxCreateValidatorC
 		config.Details,
 	)
 
-
+	
 	rateStr := config.CommissionRate
 	maxRateStr := config.CommissionMaxRate
 	maxChangeRateStr := config.CommissionMaxChangeRate
@@ -521,7 +521,7 @@ func BuildCreateValidatorMsg(clientCtx client.Context, config TxCreateValidatorC
 		return txBldr, nil, err
 	}
 
-
+	
 	msbStr := config.MinSelfDelegation
 	minSelfDelegation, ok := sdk.NewIntFromString(msbStr)
 

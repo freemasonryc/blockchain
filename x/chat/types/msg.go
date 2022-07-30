@@ -5,26 +5,127 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/ethereum/go-ethereum/common"
-
 	types "github.com/cosmos/cosmos-sdk/types"
 )
 
 var (
-	_ sdk.Msg = &MsgTest{}
 	_ sdk.Msg = &MsgRegister{}
 	_ sdk.Msg = &MsgMortgage{}
 	_ sdk.Msg = &MsgSendGift{}
 	_ sdk.Msg = &MsgSetChatFee{}
+	_ sdk.Msg = &MsgAddressBookSave{}
 )
 
 const (
-	TypeMsgConvertCoin = "convert_coin"
-	TypeMsgRegister    = "register"
-	TypeMsgMortgage    = "mortgage"
-	TypeMsgSetChatFee  = "set_chat_fee"
-	TypeMsgSendGift    = "send_gift"
+	TypeMsgRegister        = "register"
+	TypeMsgMortgage        = "mortgage"
+	TypeMsgSetChatFee      = "set_chat_fee"
+	TypeMsgSendGift        = "send_gift"
+	TypeMsgAddressBookSave = "address_book_save"
+	TypeMsgGetRewards      = "get_rewards"
+	TypeMsgMobileTransfer  = "mobile_transfer"
 )
+
+
+func NewMsgMobileTransfer(fromAddress, toAddress, mobile string) *MsgMobileTransfer {
+	return &MsgMobileTransfer{
+		FromAddress: fromAddress,
+		ToAddress:   toAddress,
+		Mobile:      mobile,
+	}
+}
+
+func (msg MsgMobileTransfer) Route() string { return RouterKey }
+func (msg MsgMobileTransfer) Type() string  { return TypeMsgMobileTransfer }
+func (msg MsgMobileTransfer) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.FromAddress)
+	if err != nil {
+		return nil
+	}
+	return []sdk.AccAddress{addr}
+}
+func (msg *MsgMobileTransfer) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
+}
+func (msg MsgMobileTransfer) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.FromAddress)
+	if err != nil {
+		return sdkerrors.Wrap(err, "invalid sender address")
+	}
+
+	_, err = sdk.AccAddressFromBech32(msg.ToAddress)
+	if err != nil {
+		return sdkerrors.Wrap(err, "invalid sender address")
+	}
+
+	return nil
+}
+func (m MsgMobileTransfer) XXX_MessageName() string {
+	return TypeMsgMobileTransfer
+}
+
+
+func NewMsgGetRewards(fromAddress string) *MsgGetRewards {
+	return &MsgGetRewards{
+		FromAddress: fromAddress,
+	}
+}
+
+func (msg MsgGetRewards) Route() string { return RouterKey }
+func (msg MsgGetRewards) Type() string  { return TypeMsgGetRewards }
+func (msg MsgGetRewards) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.FromAddress)
+	if err != nil {
+		return nil
+	}
+	return []sdk.AccAddress{addr}
+}
+func (msg *MsgGetRewards) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
+}
+func (msg MsgGetRewards) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.FromAddress)
+	if err != nil {
+		return sdkerrors.Wrap(err, "invalid sender address")
+	}
+
+	return nil
+}
+func (m MsgGetRewards) XXX_MessageName() string {
+	return TypeMsgGetRewards
+}
+
+
+func NewMsgAddressBookSave(fromAddress string, AddressBook []string) *MsgAddressBookSave {
+	return &MsgAddressBookSave{
+		FromAddress: fromAddress,
+		AddressBook: AddressBook,
+	}
+}
+
+func (msg MsgAddressBookSave) Route() string { return RouterKey }
+func (msg MsgAddressBookSave) Type() string  { return TypeMsgAddressBookSave }
+func (msg MsgAddressBookSave) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.FromAddress)
+	if err != nil {
+		return nil
+	}
+	return []sdk.AccAddress{addr}
+}
+func (msg *MsgAddressBookSave) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
+}
+func (msg MsgAddressBookSave) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.FromAddress)
+	if err != nil {
+		return sdkerrors.Wrap(err, "invalid sender address")
+	}
+
+	return nil
+}
+func (m MsgAddressBookSave) XXX_MessageName() string {
+	return TypeMsgAddressBookSave
+}
 
 
 func NewMsgSendGift(fromAddress, toAddress string, giftId, giftAmount int64, giftValue types.Coin) *MsgSendGift {
@@ -68,7 +169,7 @@ func (msg MsgSendGift) ValidateBasic() error {
 		return sdkerrors.Wrap(err, "invalid to address")
 	}
 
-	_, err = sdk.AccAddressFromBech32(msg.NodeAddress)
+	_, err = sdk.ValAddressFromBech32(msg.NodeAddress)
 	if err != nil {
 		return sdkerrors.Wrap(err, "invalid node address")
 	}
@@ -159,11 +260,12 @@ func (m MsgMortgage) XXX_MessageName() string {
 }
 
 
-func NewMsgRegister(fromAddress, nodeAddress string, mortgageAmount types.Coin) *MsgRegister {
+func NewMsgRegister(fromAddress, nodeAddress, mobilePrefix string, mortgageAmount types.Coin) *MsgRegister {
 	return &MsgRegister{
 		FromAddress:    fromAddress,
 		NodeAddress:    nodeAddress,
 		MortgageAmount: mortgageAmount,
+		MobilePrefix:   mobilePrefix,
 	}
 }
 func (msg MsgRegister) Route() string { return RouterKey }
@@ -191,7 +293,7 @@ func (msg MsgRegister) ValidateBasic() error {
 	if err != nil {
 		return sdkerrors.Wrap(err, "invalid sender address")
 	}
-	_, err = sdk.AccAddressFromBech32(msg.NodeAddress)
+	_, err = sdk.ValAddressFromBech32(msg.NodeAddress)
 	if err != nil {
 		return sdkerrors.Wrap(err, "invalid sender address")
 	}
@@ -202,43 +304,3 @@ func (m MsgRegister) XXX_MessageName() string {
 }
 
 
-
-func NewMsgTest(coin sdk.Coin, receiver common.Address, sender sdk.AccAddress) *MsgTestResponse { 
-	return &MsgTestResponse{}
-}
-
-
-func (msg MsgTest) Route() string { return RouterKey }
-
-
-func (msg MsgTest) Type() string { return TypeMsgConvertCoin }
-
-
-func (msg MsgTest) ValidateBasic() error {
-	if !msg.Coin.Amount.IsPositive() {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "cannot mint a non-positive amount")
-	}
-	_, err := sdk.AccAddressFromBech32(msg.Sender)
-	if err != nil {
-		return sdkerrors.Wrap(err, "invalid sender address")
-	}
-	if !common.IsHexAddress(msg.Receiver) {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid receiver hex address %s", msg.Receiver)
-	}
-	return nil
-}
-
-
-func (msg *MsgTest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
-}
-
-
-func (msg MsgTest) GetSigners() []sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(msg.Sender)
-	if err != nil {
-		return nil
-	}
-
-	return []sdk.AccAddress{addr}
-}

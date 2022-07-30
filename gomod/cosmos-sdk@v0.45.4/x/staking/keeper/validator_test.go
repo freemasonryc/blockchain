@@ -241,7 +241,7 @@ func TestSlashToZeroPowerRemoved(t *testing.T) {
 func TestValidatorBasics(t *testing.T) {
 	app, ctx, _, addrVals := bootstrapValidatorTest(t, 1000, 20)
 
-	
+
 	var validators [3]types.Validator
 	powers := []int64{9, 8, 7}
 	for i, power := range powers {

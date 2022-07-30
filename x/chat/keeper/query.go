@@ -36,7 +36,7 @@ func QueryUserInfo(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQueri
 		log.WithError(err).Error("UnmarshalJSON")
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
-	userInfo, err := k.GerRegisterInfo(ctx, params.Address)
+	userInfo, err := k.GetRegisterInfo(ctx, params.Address)
 	if err != nil {
 		return nil, err
 	}

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"freemasonry.cc/blockchain/x/chat/client/rest"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -71,11 +72,12 @@ func (b AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEnc
 
 
 func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Router) {
+	clientCtx = clientCtx.WithBroadcastMode(flags.BroadcastSync)
 	rest.RegisterRoutes(clientCtx, rtr)
 }
 
 func (b AppModuleBasic) RegisterGRPCGatewayRoutes(c client.Context, serveMux *runtime.ServeMux) {
-	
+
 
 
 }
@@ -132,15 +134,15 @@ func (am AppModule) LegacyQuerierHandler(amino *codec.LegacyAmino) sdk.Querier {
 
 func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterMsgServer(cfg.MsgServer(), am.keeper)
-	
-	//
-	
-	//
-
 
 	//
 
-	
+	//
+
+
+	//
+
+
 
 
 }
@@ -156,7 +158,7 @@ func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.
 	var genesisState types.GenesisState
 
 	cdc.MustUnmarshalJSON(data, &genesisState)
-	
+	am.keeper.InitGenesis(ctx)
 	return []abci.ValidatorUpdate{}
 }
 

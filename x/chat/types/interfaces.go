@@ -24,4 +24,5 @@ type BankKeeper interface {
 	SetDenomMetaData(ctx sdk.Context, denomMetaData banktypes.Metadata)
 	HasSupply(ctx sdk.Context, denom string) bool
 	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
+	GetAllBalances(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 }

@@ -63,7 +63,7 @@ func TestStakingMsgs(t *testing.T) {
 	simapp.CheckBalance(t, app, addr1, sdk.Coins{genCoin})
 	simapp.CheckBalance(t, app, addr2, sdk.Coins{genCoin})
 
-
+	
 	description := types.NewDescription("foo_moniker", "", "", "", "")
 	createValidatorMsg, err := types.NewMsgCreateValidator(
 		sdk.ValAddress(addr1), valKey.PubKey(), bondCoin, description, commissionRates, sdk.OneInt(),
@@ -87,7 +87,7 @@ func TestStakingMsgs(t *testing.T) {
 	header = tmproto.Header{Height: app.LastBlockHeight() + 1}
 	app.BeginBlock(abci.RequestBeginBlock{Header: header})
 
-
+	
 	description = types.NewDescription("bar_moniker", "", "", "", "")
 	editValidatorMsg := types.NewMsgEditValidator(sdk.ValAddress(addr1), description, nil, nil)
 
@@ -98,7 +98,7 @@ func TestStakingMsgs(t *testing.T) {
 	validator = checkValidator(t, app, sdk.ValAddress(addr1), true)
 	require.Equal(t, description, validator.Description)
 
-
+	
 	simapp.CheckBalance(t, app, addr2, sdk.Coins{genCoin})
 	delegateMsg := types.NewMsgDelegate(addr2, sdk.ValAddress(addr1), bondCoin)
 
@@ -109,15 +109,15 @@ func TestStakingMsgs(t *testing.T) {
 	simapp.CheckBalance(t, app, addr2, sdk.Coins{genCoin.Sub(bondCoin)})
 	checkDelegation(t, app, addr2, sdk.ValAddress(addr1), true, bondTokens.ToDec())
 
-
+	
 	beginUnbondingMsg := types.NewMsgUndelegate(addr2, sdk.ValAddress(addr1), bondCoin)
 	header = tmproto.Header{Height: app.LastBlockHeight() + 1}
 	_, _, err = simapp.SignCheckDeliver(t, txGen, app.BaseApp, header, []sdk.Msg{beginUnbondingMsg}, "", []uint64{1}, []uint64{1}, true, true, priv2)
 	require.NoError(t, err)
 
-
+	
 	checkDelegation(t, app, addr2, sdk.ValAddress(addr1), false, sdk.Dec{})
 
-
+	
 	simapp.CheckBalance(t, app, addr2, sdk.Coins{genCoin.Sub(bondCoin)})
 }

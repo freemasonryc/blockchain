@@ -1,4 +1,4 @@
-package keeper
+package keeper 
 
 import (
 	"bytes"
@@ -18,7 +18,7 @@ func ValidatorByPowerIndexExists(ctx sdk.Context, keeper Keeper, power []byte) b
 func TestingUpdateValidator(keeper Keeper, ctx sdk.Context, validator types.Validator, apply bool) types.Validator {
 	keeper.SetValidator(ctx, validator)
 
-
+	
 	store := ctx.KVStore(keeper.storeKey)
 	deleted := false
 

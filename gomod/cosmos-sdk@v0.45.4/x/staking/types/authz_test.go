@@ -24,25 +24,25 @@ func TestAuthzAuthorizations(t *testing.T) {
 	app := simapp.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
-
+	
 	delAuth, err := stakingtypes.NewStakeAuthorization([]sdk.ValAddress{val1, val2}, []sdk.ValAddress{}, stakingtypes.AuthorizationType_AUTHORIZATION_TYPE_UNSPECIFIED, &coin100)
 	require.NoError(t, err)
 	require.Error(t, delAuth.ValidateBasic())
 
-
+	
 	delAuth, err = stakingtypes.NewStakeAuthorization([]sdk.ValAddress{val1, val2}, []sdk.ValAddress{}, stakingtypes.AuthorizationType_AUTHORIZATION_TYPE_DELEGATE, &coin100)
 	require.NoError(t, err)
 	require.Equal(t, delAuth.MsgTypeURL(), sdk.MsgTypeURL(&stakingtypes.MsgDelegate{}))
 
-
+	
 	_, err = stakingtypes.NewStakeAuthorization([]sdk.ValAddress{val1, val2}, []sdk.ValAddress{val1}, stakingtypes.AuthorizationType_AUTHORIZATION_TYPE_DELEGATE, &coin100)
 	require.Error(t, err)
 
-
+	
 	undelAuth, _ := stakingtypes.NewStakeAuthorization([]sdk.ValAddress{val1, val2}, []sdk.ValAddress{}, stakingtypes.AuthorizationType_AUTHORIZATION_TYPE_UNDELEGATE, &coin100)
 	require.Equal(t, undelAuth.MsgTypeURL(), sdk.MsgTypeURL(&stakingtypes.MsgUndelegate{}))
 
-
+	
 	beginRedelAuth, _ := stakingtypes.NewStakeAuthorization([]sdk.ValAddress{val1, val2}, []sdk.ValAddress{}, stakingtypes.AuthorizationType_AUTHORIZATION_TYPE_REDELEGATE, &coin100)
 	require.Equal(t, beginRedelAuth.MsgTypeURL(), sdk.MsgTypeURL(&stakingtypes.MsgBeginRedelegate{}))
 

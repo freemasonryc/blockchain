@@ -3,12 +3,15 @@ package keeper
 import (
 	"fmt"
 	"freemasonry.cc/blockchain/core"
-	chatkeeper "freemasonry.cc/blockchain/x/chat/keeper"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingKeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+	stakingTypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/tendermint/tendermint/libs/log"
+	"time"
 
 	"freemasonry.cc/blockchain/x/comm/types"
 )
@@ -22,7 +25,6 @@ type Keeper struct {
 	stakingKeeper stakingKeeper.Keeper
 	accountKeeper types.AccountKeeper
 	bankKeeper    types.BankKeeper
-	chatKeeper    chatkeeper.Keeper
 }
 
 
@@ -32,13 +34,12 @@ func NewKeeper(
 	ps paramtypes.Subspace,
 	ak types.AccountKeeper,
 	bk types.BankKeeper,
-	ck chatkeeper.Keeper,
 	stakingKeeper stakingKeeper.Keeper,
 ) Keeper {
 
-	
-
-
+	if !ps.HasKeyTable() {
+		ps = ps.WithKeyTable(types.ParamKeyTable())
+	}
 
 	return Keeper{
 		storeKey:      storeKey,
@@ -46,7 +47,6 @@ func NewKeeper(
 		paramstore:    ps,
 		accountKeeper: ak,
 		bankKeeper:    bk,
-		chatKeeper:    ck,
 		stakingKeeper: stakingKeeper,
 	}
 }
@@ -74,17 +74,204 @@ func (k Keeper) AddressBookSet(ctx sdk.Context, fromAddress string, AddressBook 
 }
 
 
+func (k Keeper) SetGatewayDelegateLastTime(ctx sdk.Context, delegateAddress, validatorAddress string) error {
+	store := k.KVHelper(ctx)
+	key := types.DelegateLastTimeKey + delegateAddress + "_" + validatorAddress
+	err := store.Set(key, ctx.BlockHeight())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+
+func (k Keeper) GetGatewayDelegateLastTime(ctx sdk.Context, delegateAddress, validatorAddress string) (int64, error) {
+	store := k.KVHelper(ctx)
+	key := types.DelegateLastTimeKey + delegateAddress + "_" + validatorAddress
+	var lastHeight int64
+	err := store.GetUnmarshal(key, &lastHeight)
+	if err != nil {
+		return 0, err
+	}
+	return lastHeight, nil
+}
+
+
 func (k Keeper) GatewayBonus(ctx sdk.Context) error {
-	
-	if ctx.BlockHeight()%14400 == 0 {
-		
-		index := ctx.BlockHeight() / 5256000
-		am := sdk.NewInt(10000)
-		amount := sdk.NewCoin(sdk.DefaultBondDenom, am.Quo(sdk.NewInt(1<<index)))
+	params := k.GetParams(ctx)
+
+	if ctx.BlockHeight()%params.BonusCycle == 0 {
+
+		index := ctx.BlockHeight() / params.BonusHalve
+		amount := sdk.NewCoin(sdk.DefaultBondDenom, params.Bonus.Quo(sdk.NewInt(1<<index)))
 		if amount.IsZero() {
 			return nil
 		}
 		return k.bankKeeper.SendCoins(ctx, core.ContractGatewayBonus, core.ContractAddressFee, sdk.NewCoins(amount))
 	}
 	return nil
+}
+
+func (k Keeper) RedeemCheck(ctx sdk.Context) error {
+	redeemMap, err := k.GetGatewayRedeemNum(ctx)
+	if err != nil {
+		return err
+	}
+	var numArray []types.GatewayNumIndex
+	for _, val := range redeemMap {
+
+		if val.Status == 1 && val.Validity <= ctx.BlockHeight() {
+			val.GatewayAddress = ""
+			val.Status = 2
+			val.Validity = 0
+			numArray = append(numArray, val)
+		}
+	}
+
+	err = k.SetGatewayNum(ctx, numArray)
+	if err != nil {
+		return err
+	}
+
+	err = k.GatewayRedeemNumFilter(ctx, numArray)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+
+func (k Keeper) createValidator(ctx sdk.Context, delegatorAddress sdk.AccAddress, validatorAddress sdk.ValAddress, params types.Params, msg types.MsgGatewayRegister, delegation sdk.Coin) error {
+	if delegation.Amount.LT(params.MinDelegate) {
+		return types.ErrGatewayDelegation
+	}
+	pk, err := ParseBech32ValConsPubkey(msg.PubKey)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "Expecting cryptotypes.PubKey, got %T", pk)
+	}
+
+	if _, found := k.stakingKeeper.GetValidatorByConsAddr(ctx, sdk.GetConsAddress(pk)); found {
+		return stakingTypes.ErrValidatorPubKeyExists
+	}
+	bondDenom := k.stakingKeeper.BondDenom(ctx)
+	if delegation.Denom != bondDenom {
+		return sdkerrors.Wrapf(
+			sdkerrors.ErrInvalidRequest, "invalid coin denomination: got %s, expected %s", delegation.Denom, bondDenom,
+		)
+	}
+
+	description := stakingTypes.NewDescription(msg.GatewayName, "gateway", "", "", "")
+
+	validator, err := stakingTypes.NewValidator(validatorAddress, pk, description)
+	if err != nil {
+		return err
+	}
+	commission := stakingTypes.NewCommissionWithTime(
+		msg.Commission.Rate, msg.Commission.MaxRate,
+		msg.Commission.MaxChangeRate, ctx.BlockHeader().Time,
+	)
+	validator, err = validator.SetInitialCommission(commission)
+
+	validator.MinSelfDelegation = delegation.Amount
+	k.stakingKeeper.SetValidator(ctx, validator)
+	k.stakingKeeper.SetValidatorByConsAddr(ctx, validator)
+	k.stakingKeeper.SetNewValidatorByPowerIndex(ctx, validator)
+	k.stakingKeeper.AfterValidatorCreated(ctx, validator.GetOperator())
+
+	_, err = k.stakingKeeper.Delegate(ctx, delegatorAddress, delegation.Amount, stakingTypes.Unbonded, validator, true)
+	if err != nil {
+		return err
+	}
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			stakingTypes.EventTypeCreateValidator,
+			sdk.NewAttribute(stakingTypes.AttributeKeyValidator, validator.GetOperator().String()),
+			sdk.NewAttribute(sdk.AttributeKeyAmount, delegation.String()),
+		),
+	})
+	return nil
+}
+
+
+func (k Keeper) delegate(ctx sdk.Context, delegatorAddress sdk.AccAddress, validatorAddress sdk.ValAddress, validator stakingTypes.Validator, coin sdk.Coin) error {
+	bondDenom := k.stakingKeeper.BondDenom(ctx)
+	if coin.Denom != bondDenom {
+		return sdkerrors.Wrapf(
+			sdkerrors.ErrInvalidRequest, "invalid coin denomination: got %s, expected %s", coin.Denom, bondDenom,
+		)
+	}
+
+	newShares, err := k.stakingKeeper.Delegate(ctx, delegatorAddress, coin.Amount, stakingTypes.Unbonded, validator, true)
+	if err != nil {
+		return err
+	}
+
+	err = k.SetGatewayDelegateLastTime(ctx, delegatorAddress.String(), validatorAddress.String())
+	if err != nil {
+		return err
+	}
+	coins := k.bankKeeper.GetAllBalances(ctx, delegatorAddress)
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			stakingTypes.EventTypeDelegate,
+			sdk.NewAttribute(stakingTypes.AttributeKeyValidator, validatorAddress.String()),
+			sdk.NewAttribute(sdk.AttributeKeyAmount, coin.String()),
+			sdk.NewAttribute(stakingTypes.AttributeKeyNewShares, newShares.String()),
+			sdk.NewAttribute(stakingTypes.AttributeKeyDelegatorBalance, coins.String()),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, stakingTypes.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeySender, delegatorAddress.String()),
+		),
+	})
+	return nil
+}
+
+
+func (k Keeper) Undelegate(ctx sdk.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress, validator stakingTypes.Validator, sharesAmount sdk.Dec) (time.Time, sdk.Int, error) {
+
+	if k.stakingKeeper.HasMaxUnbondingDelegationEntries(ctx, delAddr, valAddr) {
+		return time.Time{}, sdk.ZeroInt(), stakingTypes.ErrMaxUnbondingDelegationEntries
+	}
+	returnAmount, err := k.stakingKeeper.Unbond(ctx, delAddr, valAddr, sharesAmount)
+	if err != nil {
+		return time.Time{}, sdk.ZeroInt(), err
+	}
+
+	if validator.GetOperator().String() == sdk.ValAddress(delAddr).String() {
+		params := k.GetParams(ctx)
+
+		lastTime, err := k.GetGatewayDelegateLastTime(ctx, delAddr.String(), valAddr.String())
+		if err != nil {
+			return time.Time{}, sdk.ZeroInt(), err
+		}
+		diff := ctx.BlockHeight() - lastTime
+		if diff < params.RedeemFeeHeight {
+			fees := returnAmount.ToDec().Mul(params.RedeemFee)
+			returnAmount = returnAmount.Sub(fees.RoundInt())
+			coin := sdk.NewCoin(sdk.DefaultBondDenom, fees.RoundInt())
+			err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, stakingTypes.BondedPoolName, authtypes.FeeCollectorName, sdk.NewCoins(coin))
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+
+	if validator.IsBonded() {
+		k.bondedTokensToNotBonded(ctx, returnAmount)
+	}
+
+	completionTime := ctx.BlockHeader().Time.Add(k.stakingKeeper.UnbondingTime(ctx))
+	ubd := k.stakingKeeper.SetUnbondingDelegationEntry(ctx, delAddr, valAddr, ctx.BlockHeight(), completionTime, returnAmount)
+	k.stakingKeeper.InsertUBDQueue(ctx, ubd, completionTime)
+
+	return completionTime, returnAmount, nil
+}
+
+func (k Keeper) bondedTokensToNotBonded(ctx sdk.Context, tokens sdk.Int) {
+	coins := sdk.NewCoins(sdk.NewCoin(k.stakingKeeper.BondDenom(ctx), tokens))
+	if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, stakingTypes.BondedPoolName, stakingTypes.NotBondedPoolName, coins); err != nil {
+		panic(err)
+	}
 }

@@ -1,7 +1,6 @@
 package core
 
 import (
-	"errors"
 	"freemasonry.cc/blockchain/cmd/config"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,13 +9,25 @@ import (
 )
 
 
-func MustRealString2LedgerInt(realString string) (ledgerInt sdk.Int) {
-	realIntAmount, ok := sdk.NewIntFromString(realString)
-	if !ok {
-		panic(errors.New("MustRealString2LedgerInt err"))
+func ParseBaseCoin(symbol string) string {
+	if symbol == config.DisplayDenom {
+		return config.BaseDenom
 	}
-	rate := sdk.NewInt(RealToLedgerRateInt64)
-	return realIntAmount.Mul(rate)
+	return symbol
+}
+
+
+func MustRealString2LedgerInt(realString string) (ledgerInt sdk.Int) {
+	realIntAmountDec := sdk.MustNewDecFromStr(realString)
+	if realIntAmountDec.LT(MinRealAmountDec) && !realIntAmountDec.IsZero() {
+		realIntAmountDec = MinRealAmountDec
+	}
+	return realIntAmountDec.Mul(RealToLedgerRateDec).TruncateInt()
+}
+
+func RealString2LedgerCoin(realString, denom string) sdk.Coin {
+	denom = ParseBaseCoin(denom)
+	return sdk.NewCoin(denom, MustRealString2LedgerInt(realString))
 }
 
 
@@ -26,53 +37,61 @@ func MustLedgerInt2RealString(ledgerInt sdk.Int) string {
 	if err != nil {
 		panic(err)
 	}
-	realAmount := RemoveStringLastZero(realCoinAmount.Mul(rate).String())
-	return realAmount
+	return RemoveStringLastZero(realCoinAmount.Mul(rate).String())
 }
 
 
-func NewLedgerInt(realAmount float64) int64 {
-	if realAmount < MinRealAmountFloat64 {
-		return int64(MinRealAmountFloat64 * RealToLedgerRate)
+func MustParseLedgerDec(ledgerDec sdk.Dec) (realAmount string) {
+	rate, err := sdk.NewDecFromStr(LedgerToRealRate)
+	if err != nil {
+		panic(err)
 	}
-	return int64(realAmount * RealToLedgerRate)
+	return RemoveStringLastZero(ledgerDec.Mul(rate).String())
+}
+
+
+func NewLedgerInt(realAmount float64) sdk.Int {
+	if realAmount < MinRealAmountFloat64 {
+		return sdk.NewInt(int64(MinRealAmountFloat64 * RealToLedgerRate))
+	}
+	return sdk.NewInt(int64(realAmount * RealToLedgerRate))
 }
 
 
 func NewLedgerDec(realAmount float64) sdk.Dec {
 	ledgerInt := NewLedgerInt(realAmount)
-	return sdk.NewDec(ledgerInt)
+	return sdk.NewDecFromInt(ledgerInt)
 }
 
 
 func NewLedgerCoin(realAmount float64) sdk.Coin {
 	ledgerInt := NewLedgerInt(realAmount)
-	return sdk.NewCoin(config.BaseDenom, sdk.NewInt(ledgerInt))
+	return sdk.NewCoin(config.BaseDenom, ledgerInt)
 }
 
 
 func NewLedgerDecCoin(realAmount float64) sdk.DecCoin {
 	ledgerInt := NewLedgerInt(realAmount)
-	return sdk.NewDecCoin(config.BaseDenom, sdk.NewInt(ledgerInt))
+	return sdk.NewDecCoin(config.BaseDenom, ledgerInt)
 }
 
 
 func NewLedgerCoins(realAmount float64) sdk.Coins {
 	ledgerInt := NewLedgerInt(realAmount)
-	return sdk.NewCoins(sdk.NewCoin(config.BaseDenom, sdk.NewInt(ledgerInt)))
+	return sdk.NewCoins(sdk.NewCoin(config.BaseDenom, ledgerInt))
 }
 
 
 func NewLedgerFeeFromGas(gas uint64, amount float64) legacytx.StdFee {
 	ledgerInt := NewLedgerInt(amount)
-	fee := legacytx.NewStdFee(gas, sdk.NewCoins(sdk.NewInt64Coin(config.BaseDenom, ledgerInt)))
+	fee := legacytx.NewStdFee(gas, sdk.NewCoins(sdk.NewCoin(config.BaseDenom, ledgerInt)))
 	return fee
 }
 
 
 func NewLedgerFee(amount float64) legacytx.StdFee {
 	ledgerInt := NewLedgerInt(amount)
-	fee := legacytx.NewStdFee(flags.DefaultGasLimit, sdk.NewCoins(sdk.NewInt64Coin(config.BaseDenom, ledgerInt)))
+	fee := legacytx.NewStdFee(flags.DefaultGasLimit, sdk.NewCoins(sdk.NewCoin(config.BaseDenom, ledgerInt)))
 	return fee
 }
 
@@ -90,24 +109,6 @@ func MustParseLedgerCoins(ledgerCoins sdk.Coins) (realAmount string) {
 
 func MustParseLedgerFee(ledgerFee legacytx.StdFee) (realAmount string) {
 	return MustParseLedgerCoins(ledgerFee.Amount)
-}
-
-
-func MustParseLedgerInt(ledgerInt sdk.Int) (realAmount string) {
-	rate, err := sdk.NewDecFromStr(LedgerToRealRate)
-	if err != nil {
-		panic(err)
-	}
-	return RemoveStringLastZero(sdk.NewDecFromInt(ledgerInt).Mul(rate).String())
-}
-
-
-func MustParseLedgerDec(ledgerDec sdk.Dec) (realAmount string) {
-	rate, err := sdk.NewDecFromStr(LedgerToRealRate)
-	if err != nil {
-		panic(err)
-	}
-	return RemoveStringLastZero(ledgerDec.Mul(rate).String())
 }
 
 
@@ -218,7 +219,26 @@ func MustRealCoins2LedgerDecCoins(realCoins RealCoins) (ledgerDecCoins sdk.DecCo
 	return
 }
 
+func RealCoinsBase2Display(realCoins RealCoins) (DisplayRealCoins RealCoins) {
+	for i, c := range realCoins {
+		if c.Denom == config.BaseDenom {
+			c.Denom = config.DisplayDenom
+			realCoins[i] = c
+		}
+	}
+	return realCoins
+}
 
+/*
+RealCoin 2 Coin
+RealCoins 2 Coins
+RealCoins 2 DecCoins
+RealCoins 2 DecCoin
+DecCoin 2 RealCoin
+DecCoins 2 RealCoins
+Coin 2 RealCoin
+Coins 2 RealCoins
+*/
 
 func MustRealCoin2LedgerCoin(realCoin RealCoin) (ledgerCoin sdk.Coin) {
 	realCoinAmount, err := sdk.NewDecFromStr(realCoin.Amount)
@@ -290,7 +310,7 @@ func RemoveDecLastZero(amount sdk.Dec) string {
 		xiaoshu = xiaoshu[:18]
 	}
 	xiaoshu2 := ""
-	
+
 	for i := len(xiaoshu) - 1; i >= 0; i-- {
 		if xiaoshu[i] != '0' {
 			xiaoshu2 = xiaoshu[:i+1]

@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-
+	
 	"io/ioutil"
 	"net/http"
 )
@@ -75,7 +75,6 @@ func GetRequest(server, params string) (string, error) {
 	return string(body), err
 }
 
-
 func PostValuesRequest(server, url string, values url.Values) (string, error) {
 	client := http.Client{
 		Transport: &http.Transport{
@@ -102,14 +101,13 @@ func PostValuesRequest(server, url string, values url.Values) (string, error) {
 	
 	if resp.StatusCode != 200 {
 		if len(body) == 0 {
-			return "", errors.New("错误返回码" + strconv.Itoa(resp.StatusCode))
+			return "", errors.New("err code return:" + strconv.Itoa(resp.StatusCode))
 		}
 		return "", errors.New(string(body))
 	}
 	
 	return string(body), err
 }
-
 
 func PostRequest(server, url string, params []byte) (string, error) {
 	client := http.Client{
@@ -135,7 +133,7 @@ func PostRequest(server, url string, params []byte) (string, error) {
 	}
 	if resp.StatusCode != 200 {
 		if len(body) == 0 {
-			return "", errors.New("错误返回码" + strconv.Itoa(resp.StatusCode))
+			return "", errors.New("error code:" + strconv.Itoa(resp.StatusCode))
 		}
 		return "", errors.New(string(body))
 	}
@@ -173,32 +171,10 @@ func PostRequestByTimeout(server, url string, params []byte, timeout time.Durati
 	return string(body), err
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 func txToStdTx(clientCtx client.Context, tx sdk.Tx) (*legacytx.StdTx, error) {
 	signingTx, ok := tx.(signing.Tx)
 	if !ok {
-		return nil, errors.New("tx转stdtx失败")
+		return nil, errors.New("tx to stdtx error")
 	}
 	stdTx, err := clienttx.ConvertTxToStdTx(clientCtx.LegacyAmino, signingTx)
 	if err != nil {

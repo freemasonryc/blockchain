@@ -21,9 +21,6 @@ func RegisterRoutes(clientCtx client.Context, r *mux.Router) {
 	
 	txHandles = newTxHandles(clientCtx)
 
-	
-
-	
 }
 
 

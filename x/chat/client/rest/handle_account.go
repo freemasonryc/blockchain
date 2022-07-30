@@ -35,7 +35,7 @@ func AccountNumberSeqHandlerFn(clientCtx client.Context) http.HandlerFunc {
 
 		accountNumber, sequence, err := clientCtx.AccountRetriever.GetAccountNumberSequence(clientCtx, addr)
 		if err != nil {
-			
+
 			if strings.Contains(err.Error(), "not found: key not found") {
 				res.Status = 1
 				res.Sequence = 0
@@ -71,7 +71,7 @@ func judgeBalance(cliCtx *client.Context, address sdk.AccAddress, amount sdk.Dec
 		return false, err.Error()
 	}
 
-	
+
 	if sdk.NewDecFromInt(coin.Amount).GTE(amount) {
 		return true, ""
 	}

@@ -26,4 +26,6 @@ func init() {
 
 const (
 	KeyPrefixAddressBook = "comm_address_book"
+
+	DelegateLastTimeKey = "delegate_last_time_"
 )

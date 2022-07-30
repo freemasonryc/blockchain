@@ -13,7 +13,7 @@ import (
 
 func RegisterHandlerFn(msgBytes []byte, ctx *client.Context, fee legacytx.StdFee, memo string) error {
 
-	
+
 	log := core.BuildLog(core.GetFuncName(), core.LmChainRest)
 	var register types.MsgRegister
 	err := util.Json.Unmarshal(msgBytes, &register)
@@ -27,7 +27,7 @@ func RegisterHandlerFn(msgBytes []byte, ctx *client.Context, fee legacytx.StdFee
 		return err
 	}
 
-	
+
 	balStatus, errStr := judgeBalance(ctx, accFromAddress, register.MortgageAmount.Amount.ToDec(), register.MortgageAmount.Denom)
 	if !balStatus {
 		log.Error("judgeBalance fail | ", errStr)
@@ -38,7 +38,7 @@ func RegisterHandlerFn(msgBytes []byte, ctx *client.Context, fee legacytx.StdFee
 
 func MortgageHandlerFn(msgBytes []byte, ctx *client.Context, fee legacytx.StdFee, memo string) error {
 
-	
+
 	log := core.BuildLog(core.GetFuncName(), core.LmChainRest)
 	var msgMortgage types.MsgMortgage
 	err := util.Json.Unmarshal(msgBytes, &msgMortgage)
@@ -52,7 +52,7 @@ func MortgageHandlerFn(msgBytes []byte, ctx *client.Context, fee legacytx.StdFee
 		return err
 	}
 
-	
+
 	balStatus, errStr := judgeBalance(ctx, accFromAddress, msgMortgage.MortgageAmount.Amount.ToDec(), msgMortgage.MortgageAmount.Denom)
 	if !balStatus {
 		log.Error("judgeBalance fail | ", errStr)
@@ -67,6 +67,20 @@ func SetChatFeeHandlerFn(msgBytes []byte, ctx *client.Context, fee legacytx.StdF
 }
 
 func SendGiftHandlerFn(msgBytes []byte, ctx *client.Context, fee legacytx.StdFee, memo string) error {
+
+	return nil
+}
+func AddressBookSaveHandlerFn(msgBytes []byte, ctx *client.Context, fee legacytx.StdFee, memo string) error {
+
+	return nil
+}
+
+func GetRewardsHandlerFn(msgBytes []byte, ctx *client.Context, fee legacytx.StdFee, memo string) error {
+
+	return nil
+}
+
+func MobileTransferHandlerFn(msgBytes []byte, ctx *client.Context, fee legacytx.StdFee, memo string) error {
 
 	return nil
 }

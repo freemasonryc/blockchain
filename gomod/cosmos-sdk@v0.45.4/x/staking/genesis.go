@@ -25,11 +25,11 @@ func InitGenesis(
 	bondedTokens := sdk.ZeroInt()
 	notBondedTokens := sdk.ZeroInt()
 
-
-
-
-
-
+	
+	
+	
+	
+	
 	ctx = ctx.WithBlockHeight(1 - sdk.ValidatorUpdateDelay)
 
 	keeper.SetParams(ctx, data.Params)
@@ -38,16 +38,16 @@ func InitGenesis(
 	for _, validator := range data.Validators {
 		keeper.SetValidator(ctx, validator)
 
-
+		
 		keeper.SetValidatorByConsAddr(ctx, validator)
 		keeper.SetValidatorByPowerIndex(ctx, validator)
 
-
+		
 		if !data.Exported {
 			keeper.AfterValidatorCreated(ctx, validator.GetOperator())
 		}
 
-
+		
 		if validator.IsUnbonding() {
 			keeper.InsertUnbondingValidatorQueue(ctx, validator)
 		}
@@ -68,13 +68,13 @@ func InitGenesis(
 			panic(err)
 		}
 
-
+		
 		if !data.Exported {
 			keeper.BeforeDelegationCreated(ctx, delegatorAddress, delegation.GetValidatorAddr())
 		}
 
 		keeper.SetDelegation(ctx, delegation)
-
+		
 		if !data.Exported {
 			keeper.AfterDelegationModified(ctx, delegatorAddress, delegation.GetValidatorAddr())
 		}
@@ -100,17 +100,17 @@ func InitGenesis(
 	bondedCoins := sdk.NewCoins(sdk.NewCoin(data.Params.BondDenom, bondedTokens))
 	notBondedCoins := sdk.NewCoins(sdk.NewCoin(data.Params.BondDenom, notBondedTokens))
 
-
+	
 	bondedPool := keeper.GetBondedPool(ctx)
 	if bondedPool == nil {
 		panic(fmt.Sprintf("%s module account has not been set", types.BondedPoolName))
 	}
-
+	
 	bondedBalance := bankKeeper.GetAllBalances(ctx, bondedPool.GetAddress())
 	if bondedBalance.IsZero() {
 		accountKeeper.SetModuleAccount(ctx, bondedPool)
 	}
-
+	
 	if !bondedBalance.IsEqual(bondedCoins) {
 		panic(fmt.Sprintf("bonded pool balance is different from bonded coins: %s <-> %s", bondedBalance, bondedCoins))
 	}
@@ -123,11 +123,11 @@ func InitGenesis(
 	if notBondedBalance.IsZero() {
 		accountKeeper.SetModuleAccount(ctx, notBondedPool)
 	}
-
+	
 	if !notBondedBalance.IsEqual(notBondedCoins) {
 		panic(fmt.Sprintf("not bonded pool balance is different from not bonded coins: %s <-> %s", notBondedBalance, notBondedCoins))
 	}
-
+	
 	if data.Exported {
 		for _, lv := range data.LastValidatorPowers {
 			valAddr, err := sdk.ValAddressFromBech32(lv.Address)
@@ -142,7 +142,7 @@ func InitGenesis(
 			}
 
 			update := validator.ABCIValidatorUpdate(keeper.PowerReduction(ctx))
-			update.Power = lv.Power
+			update.Power = lv.Power 
 			res = append(res, update)
 		}
 	} else {

@@ -22,7 +22,7 @@ type Helper struct {
 
 	Ctx        sdk.Context
 	Commission stakingtypes.CommissionRates
-
+	
 	Denom string
 }
 

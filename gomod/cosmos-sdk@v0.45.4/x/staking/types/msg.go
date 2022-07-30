@@ -63,7 +63,7 @@ func (msg MsgCreateValidator) Type() string { return TypeMsgCreateValidator }
 
 
 func (msg MsgCreateValidator) GetSigners() []sdk.AccAddress {
-
+	
 	delAddr, err := sdk.AccAddressFromBech32(msg.DelegatorAddress)
 	if err != nil {
 		panic(err)
@@ -88,7 +88,7 @@ func (msg MsgCreateValidator) GetSignBytes() []byte {
 
 
 func (msg MsgCreateValidator) ValidateBasic() error {
-
+	
 	delAddr, err := sdk.AccAddressFromBech32(msg.DelegatorAddress)
 	if err != nil {
 		return err

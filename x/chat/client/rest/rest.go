@@ -21,26 +21,27 @@ func RegisterRoutes(clientCtx client.Context, r *mux.Router) {
 	registerQueryRoutes(clientCtx, r)
 	registerTxHandlers(clientCtx, r)
 
-	
+
 	txHandles = newTxHandles(clientCtx)
-	
-	
+
 	txHandles.Add(types.TypeMsgRegister, RegisterHandlerFn)
 	txHandles.Add(types.TypeMsgMortgage, MortgageHandlerFn)
 	txHandles.Add(types.TypeMsgSetChatFee, SetChatFeeHandlerFn)
 	txHandles.Add(types.TypeMsgSendGift, SendGiftHandlerFn)
-
+	txHandles.Add(types.TypeMsgAddressBookSave, AddressBookSaveHandlerFn)
+	txHandles.Add(types.TypeMsgGetRewards, GetRewardsHandlerFn)
+	txHandles.Add(types.TypeMsgMobileTransfer, MobileTransferHandlerFn)
 }
 
 
 func registerQueryRoutes(clientCtx client.Context, r *mux.Router) {
-	
+
 	r.HandleFunc("/chat/accountNumberSeq/{address}", AccountNumberSeqHandlerFn(clientCtx)).Methods("GET")
 }
 
 
 func registerTxHandlers(clientCtx client.Context, r *mux.Router) {
-	
+
 	r.HandleFunc("/chat/tx/broadcast", BroadcastTxHandlerFn(clientCtx)).Methods("POST")
 
 }
@@ -83,6 +84,6 @@ func (this *TxHandles) Handle(msgType string, msgBytes []byte, fee legacytx.StdF
 		log.Error("No handle registered!")
 		return errors.New("msgType:" + msgType + " No handle registered!!")
 	}
-	log.Info("do") 
+	log.Info("do")
 	return this.funcMap[msgType](msgBytes, &this.ctx, fee, memo)
 }

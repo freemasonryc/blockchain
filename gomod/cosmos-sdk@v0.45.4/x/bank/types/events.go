@@ -13,16 +13,20 @@ const (
 
 	AttributeValueCategory = ModuleName
 
-
+	
 	EventTypeCoinSpent    = "coin_spent"
 	EventTypeCoinReceived = "coin_received"
-	EventTypeCoinMint     = "coinbase"
+	EventTypeCoinMint     = "coinbase" 
 	EventTypeCoinBurn     = "burn"
 
 	AttributeKeySpender  = "spender"
 	AttributeKeyReceiver = "receiver"
 	AttributeKeyMinter   = "minter"
 	AttributeKeyBurner   = "burner"
+
+	
+	AttributeKeyRecipientBalance = "recipientBalance"
+	AttributeKeySenderBalance    = "senderBalance"
 )
 
 

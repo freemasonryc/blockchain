@@ -39,61 +39,61 @@ var SmartABI = SmartMetaData.ABI
 
 
 type Smart struct {
-	SmartCaller
-	SmartTransactor
-	SmartFilterer
+	SmartCaller     
+	SmartTransactor 
+	SmartFilterer   
 }
 
 
 type SmartCaller struct {
-	contract *bind.BoundContract
+	contract *bind.BoundContract 
 }
 
 
 type SmartTransactor struct {
-	contract *bind.BoundContract
+	contract *bind.BoundContract 
 }
 
 
 type SmartFilterer struct {
-	contract *bind.BoundContract
+	contract *bind.BoundContract 
 }
 
 
 
 type SmartSession struct {
-	Contract     *Smart
-	CallOpts     bind.CallOpts
-	TransactOpts bind.TransactOpts
+	Contract     *Smart            
+	CallOpts     bind.CallOpts     
+	TransactOpts bind.TransactOpts 
 }
 
 
 
 type SmartCallerSession struct {
-	Contract *SmartCaller
-	CallOpts bind.CallOpts
+	Contract *SmartCaller  
+	CallOpts bind.CallOpts 
 }
 
 
 
 type SmartTransactorSession struct {
-	Contract     *SmartTransactor
-	TransactOpts bind.TransactOpts
+	Contract     *SmartTransactor  
+	TransactOpts bind.TransactOpts 
 }
 
 
 type SmartRaw struct {
-	Contract *Smart
+	Contract *Smart 
 }
 
 
 type SmartCallerRaw struct {
-	Contract *SmartCaller
+	Contract *SmartCaller 
 }
 
 
 type SmartTransactorRaw struct {
-	Contract *SmartTransactor
+	Contract *SmartTransactor 
 }
 
 
@@ -472,26 +472,26 @@ func (_Smart *SmartTransactorSession) TransferFrom(sender common.Address, recipi
 
 
 type SmartApprovalIterator struct {
-	Event *SmartApproval
+	Event *SmartApproval 
 
-	contract *bind.BoundContract
-	event    string
+	contract *bind.BoundContract 
+	event    string              
 
-	logs chan types.Log
-	sub  ethereum.Subscription
-	done bool
-	fail error
+	logs chan types.Log        
+	sub  ethereum.Subscription 
+	done bool                  
+	fail error                 
 }
 
 
 
 
 func (it *SmartApprovalIterator) Next() bool {
-
+	
 	if it.fail != nil {
 		return false
 	}
-
+	
 	if it.done {
 		select {
 		case log := <-it.logs:
@@ -507,7 +507,7 @@ func (it *SmartApprovalIterator) Next() bool {
 			return false
 		}
 	}
-
+	
 	select {
 	case log := <-it.logs:
 		it.Event = new(SmartApproval)
@@ -542,7 +542,7 @@ type SmartApproval struct {
 	Owner   common.Address
 	Spender common.Address
 	Value   *big.Int
-	Raw     types.Log
+	Raw     types.Log 
 }
 
 
@@ -589,7 +589,7 @@ func (_Smart *SmartFilterer) WatchApproval(opts *bind.WatchOpts, sink chan<- *Sm
 		for {
 			select {
 			case log := <-logs:
-
+				
 				event := new(SmartApproval)
 				if err := _Smart.contract.UnpackLog(event, "Approval", log); err != nil {
 					return err
@@ -626,26 +626,26 @@ func (_Smart *SmartFilterer) ParseApproval(log types.Log) (*SmartApproval, error
 
 
 type SmartTransferIterator struct {
-	Event *SmartTransfer
+	Event *SmartTransfer 
 
-	contract *bind.BoundContract
-	event    string
+	contract *bind.BoundContract 
+	event    string              
 
-	logs chan types.Log
-	sub  ethereum.Subscription
-	done bool
-	fail error
+	logs chan types.Log        
+	sub  ethereum.Subscription 
+	done bool                  
+	fail error                 
 }
 
 
 
 
 func (it *SmartTransferIterator) Next() bool {
-
+	
 	if it.fail != nil {
 		return false
 	}
-
+	
 	if it.done {
 		select {
 		case log := <-it.logs:
@@ -661,7 +661,7 @@ func (it *SmartTransferIterator) Next() bool {
 			return false
 		}
 	}
-
+	
 	select {
 	case log := <-it.logs:
 		it.Event = new(SmartTransfer)
@@ -696,7 +696,7 @@ type SmartTransfer struct {
 	From  common.Address
 	To    common.Address
 	Value *big.Int
-	Raw   types.Log
+	Raw   types.Log 
 }
 
 
@@ -743,7 +743,7 @@ func (_Smart *SmartFilterer) WatchTransfer(opts *bind.WatchOpts, sink chan<- *Sm
 		for {
 			select {
 			case log := <-logs:
-
+				
 				event := new(SmartTransfer)
 				if err := _Smart.contract.UnpackLog(event, "Transfer", log); err != nil {
 					return err

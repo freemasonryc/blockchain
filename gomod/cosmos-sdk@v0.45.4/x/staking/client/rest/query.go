@@ -1,6 +1,8 @@
 package rest
 
 import (
+	"context"
+	"encoding/base64"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -105,6 +107,64 @@ func registerQueryRoutes(clientCtx client.Context, r *mux.Router) {
 		"/staking/parameters",
 		paramsHandlerFn(clientCtx),
 	).Methods("GET")
+
+
+	r.HandleFunc(
+		"/staking/node/validator",
+		nodeValidatorInfoHandlerFn(clientCtx),
+	).Methods("GET")
+}
+
+
+func nodeValidatorInfoHandlerFn(clientCtx client.Context) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		node, err := clientCtx.GetNode()
+		if rest.CheckInternalServerError(w, err) {
+			return
+		}
+		statusInfo, err := node.Status(context.Background())
+		if rest.CheckInternalServerError(w, err) {
+			return
+		}
+
+		consAddress, err := sdk.ConsAddressFromHex(statusInfo.ValidatorInfo.Address.String())
+		if rest.CheckInternalServerError(w, err) {
+			return
+		}
+		params := types.QueryValidatorByConsAddrParams{ValidatorConsAddress: consAddress}
+		bz, err := clientCtx.LegacyAmino.MarshalJSON(params)
+		if rest.CheckInternalServerError(w, err) {
+			return
+		}
+		validatorInfo := &types.ValidatorInfor{
+			ValidatorStatus:   "",
+			ValidatorPubAddr:  statusInfo.ValidatorInfo.PubKey.Address().String(),
+			ValidatorConsAddr: consAddress.String(),
+			ValidatorPubKey:   base64.StdEncoding.EncodeToString(statusInfo.ValidatorInfo.PubKey.Bytes()),
+		}
+		resBytes, _, err := clientCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryValidatorsByConsAddress), bz)
+		if err != nil {
+
+			if strings.Contains(err.Error(), types.ErrNoValidatorFound.Error()) {
+				validatorInfo.ValidatorStatus = "4"
+				rest.PostProcessResponseBare(w, clientCtx, validatorInfo)
+				return
+			}
+			if rest.CheckInternalServerError(w, err) {
+				return
+			}
+		}
+		validator := &types.Validator{}
+		err = clientCtx.LegacyAmino.UnmarshalJSON(resBytes, validator)
+		if rest.CheckInternalServerError(w, err) {
+			return
+		}
+		validatorInfo.ValidatorStatus = strconv.Itoa(GetValidatorStatus(validator.Status, validator.Jailed))
+		validatorInfo.ValidatorOperAddr = validator.GetOperator().String()
+		accAddre := sdk.AccAddress(validator.GetOperator())
+		validatorInfo.AccAddress = accAddre.String()
+		rest.PostProcessResponseBare(w, clientCtx, validatorInfo)
+	}
 }
 
 
@@ -397,4 +457,21 @@ func paramsHandlerFn(clientCtx client.Context) http.HandlerFunc {
 		clientCtx = clientCtx.WithHeight(height)
 		rest.PostProcessResponse(w, clientCtx, res)
 	}
+}
+
+
+func GetValidatorStatus(status types.BondStatus, jailed bool) int {
+	if jailed {
+		return 3
+	} else {
+		switch status.String() {
+		case "BOND_STATUS_UNBONDED":
+			return 0
+		case "BOND_STATUS_UNBONDING":
+			return 1
+		case "BOND_STATUS_BONDED":
+			return 2
+		}
+	}
+	return 0
 }

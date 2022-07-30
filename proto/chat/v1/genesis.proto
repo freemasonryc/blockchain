@@ -24,4 +24,17 @@ message Params {
   string ecologicalAddress = 2;
   //最小质押金额
   cosmos.base.v1beta1.Coin minMortgageCoin = 3 [ (gogoproto.nullable) = false ];
+
+  //聊天质押奖励 每天发放 1%
+  repeated chatReward chatRewardLog = 4 [ (gogoproto.nullable) = false ];
+
+  //用户最有持有多少个手机号
+  uint64 maxPhoneNumber = 5;
+}
+
+message chatReward {
+  //日期
+  int64 Height = 1;
+  //奖励金额
+  string Value = 2;
 }

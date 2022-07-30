@@ -1,25 +1,21 @@
 syntax = "proto3";
 package freemasonry.comm.v1;
 
-import "google/protobuf/any.proto";
 import "google/api/annotations.proto";
 import "gogoproto/gogo.proto";
 import "cosmos_proto/cosmos.proto";
+import "cosmos/base/v1beta1/coin.proto";
 import "cosmos/staking/v1beta1/staking.proto";
 
 option go_package = "freemasonry.cc/blockchain/x/comm/types";
 
 service Msg {
-  //保存通讯录
-  rpc AddressBookSave(MsgAddressBookSave) returns (MsgEmptyResponse);
   //网关注册
   rpc GatewayRegister(MsgGatewayRegister) returns (MsgEmptyResponse);
-}
-
-// 通讯录保存消息结构体
-message MsgAddressBookSave {
-  string from_address = 1;
-  repeated string address_book = 2;
+  //网关抵押
+  rpc GatewayDelegation(MsgGatewayDelegate) returns (MsgEmptyResponse);
+  //网关赎回
+  rpc GatewayUndelegate(MsgGatewayUndelegate) returns (MsgEmptyResponse);
 }
 
 //网关注册
@@ -28,14 +24,40 @@ message MsgGatewayRegister {
   string address = 1;
   //网关名称
   string gateway_name = 2;
+  //网关地址
+  string gateway_url = 3;
   //抵押值
-  string delegation = 3;
+  string delegation = 4;
+  //号码段
+  repeated string index_number = 5;
+  //公钥
+  string pub_key            = 6 ;
+
+  cosmos.staking.v1beta1.CommissionRates commission          = 7 [(gogoproto.nullable) = false];
+}
+
+//网关抵押
+message MsgGatewayDelegate {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string                   delegator_address = 1 [(gogoproto.moretags) = "yaml:\"delegator_address\""];
+  string                   validator_address = 2 [(gogoproto.moretags) = "yaml:\"validator_address\""];
+  cosmos.base.v1beta1.Coin amount            = 3 [(gogoproto.nullable) = false];
   //号码段
   repeated string index_number = 4;
-  //公钥
-  google.protobuf.Any      pubkey            = 5 [(cosmos_proto.accepts_interface) = "cosmos.crypto.PubKey"];
+}
 
-  cosmos.staking.v1beta1.CommissionRates commission          = 6 [(gogoproto.nullable) = false];
+//网关赎回
+message MsgGatewayUndelegate {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string                   delegator_address = 1 [(gogoproto.moretags) = "yaml:\"delegator_address\""];
+  string                   validator_address = 2 [(gogoproto.moretags) = "yaml:\"validator_address\""];
+  cosmos.base.v1beta1.Coin amount            = 3 [(gogoproto.nullable) = false];
+  //号码段
+  repeated string index_number = 4;
 }
 
 // MsgConvertCoinResponse returns no fieldsyou

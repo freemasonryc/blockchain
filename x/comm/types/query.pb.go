@@ -24,7 +24,7 @@ var _ = math.Inf
 
 
 
-const _ = proto.GoGoProtoPackageIsVersion3
+const _ = proto.GoGoProtoPackageIsVersion3 
 
 
 
@@ -98,7 +98,7 @@ func init() {
 func init() { proto.RegisterFile("query.proto", fileDescriptor_5c6ac9b241082464) }
 
 var fileDescriptor_5c6ac9b241082464 = []byte{
-
+	
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x8f, 0x31, 0x0b, 0xc2, 0x30,
 	0x10, 0x85, 0x5d, 0x14, 0x8c, 0x8b, 0xa6, 0x4e, 0xc5, 0xa9, 0x60, 0x71, 0x4a, 0x50, 0xff, 0x81,
 	0xff, 0x40, 0x71, 0x12, 0x97, 0x34, 0x9c, 0xb1, 0xd8, 0xe6, 0xd2, 0x5c, 0x2a, 0xf6, 0xdf, 0x4b,
@@ -125,7 +125,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 
 type QueryClient interface {
-
+	
 	TestQuery(ctx context.Context, in *TestQueryRequest, opts ...grpc.CallOption) (*TestQueryResponse, error)
 }
 
@@ -148,7 +148,7 @@ func (c *queryClient) TestQuery(ctx context.Context, in *TestQueryRequest, opts 
 
 
 type QueryServer interface {
-
+	
 	TestQuery(context.Context, *TestQueryRequest) (*TestQueryResponse, error)
 }
 

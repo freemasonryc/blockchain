@@ -59,10 +59,33 @@ func NewQuerier(k Keeper, legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {
 		case types.QueryParameters:
 			return queryParameters(ctx, k, legacyQuerierCdc)
 
+		case types.QueryValidatorsByConsAddress:
+			return queryValidatorByConsAddress(ctx, req, k, legacyQuerierCdc)
+
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown %s query endpoint: %s", types.ModuleName, path[0])
 		}
 	}
+}
+
+
+func queryValidatorByConsAddress(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {
+	var params types.QueryValidatorByConsAddrParams
+
+	err := legacyQuerierCdc.UnmarshalJSON(req.Data, &params)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
+	}
+
+	validator, found := k.GetValidatorByConsAddr(ctx, params.ValidatorConsAddress)
+	if !found {
+		return nil, types.ErrNoValidatorFound
+	}
+	res, err := codec.MarshalJSONIndent(legacyQuerierCdc, validator)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+	}
+	return res, nil
 }
 
 func queryValidators(ctx sdk.Context, req abci.RequestQuery, k Keeper, legacyQuerierCdc *codec.LegacyAmino) ([]byte, error) {

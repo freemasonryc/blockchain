@@ -15,7 +15,7 @@ import (
 
 
 func NewHistoricalInfo(header tmproto.Header, valSet Validators, powerReduction sdk.Int) HistoricalInfo {
-
+	
 	sort.SliceStable(valSet, func(i, j int) bool {
 		return ValidatorsByVotingPower(valSet).Less(i, j, powerReduction)
 	})

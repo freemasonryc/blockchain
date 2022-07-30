@@ -21,6 +21,7 @@ const (
 	QueryPool                          = "pool"
 	QueryParameters                    = "parameters"
 	QueryHistoricalInfo                = "historicalInfo"
+	QueryValidatorsByConsAddress       = "validatorConsAddress"
 )
 
 
@@ -79,4 +80,19 @@ type QueryValidatorsParams struct {
 
 func NewQueryValidatorsParams(page, limit int, status string) QueryValidatorsParams {
 	return QueryValidatorsParams{page, limit, status}
+}
+
+
+type QueryValidatorByConsAddrParams struct {
+	ValidatorConsAddress sdk.ConsAddress
+}
+
+
+type ValidatorInfor struct {
+	ValidatorConsAddr string `json:"validator_consaddr"`
+	ValidatorStatus   string `json:"validator_status"`
+	ValidatorPubAddr  string `json:"validator_pubaddr"`
+	ValidatorOperAddr string `json:"validator_operaddr"`
+	AccAddress        string `json:"acc_address"`
+	ValidatorPubKey   string `json:"validator_pubkey"`
 }

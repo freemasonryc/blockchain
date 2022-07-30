@@ -123,7 +123,7 @@ func (suite *IntegrationTestSuite) TestSpendableBalances() {
 	app.AccountKeeper.SetAccount(ctx, acc)
 	suite.Require().NoError(simapp.FundAccount(app.BankKeeper, ctx, acc.GetAddress(), origCoins))
 
-
+	
 	ctx = ctx.WithBlockTime(ctx.BlockTime().Add(30 * time.Minute))
 	queryHelper := baseapp.NewQueryServerTestHelper(ctx, app.InterfaceRegistry())
 	types.RegisterQueryServer(queryHelper, app.BankKeeper)
@@ -263,7 +263,7 @@ func (suite *IntegrationTestSuite) QueryDenomsMetadataRequest() {
 
 	for _, tc := range testCases {
 		suite.Run(fmt.Sprintf("Case %s", tc.msg), func() {
-			suite.SetupTest()
+			suite.SetupTest() 
 
 			tc.malleate()
 			ctx := sdk.WrapSDKContext(suite.ctx)
@@ -340,7 +340,7 @@ func (suite *IntegrationTestSuite) QueryDenomMetadataRequest() {
 
 	for _, tc := range testCases {
 		suite.Run(fmt.Sprintf("Case %s", tc.msg), func() {
-			suite.SetupTest()
+			suite.SetupTest() 
 
 			tc.malleate()
 			ctx := sdk.WrapSDKContext(suite.ctx)

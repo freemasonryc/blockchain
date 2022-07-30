@@ -12,7 +12,8 @@ var ModuleCdc = codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 
 	cdc.RegisterConcrete(&MsgGatewayRegister{}, MSG_GATEWAY_REGISTER, nil)
-	cdc.RegisterConcrete(&MsgAddressBookSave{}, MSG_ADDRESS_BOOK_SAVE, nil)
+	cdc.RegisterConcrete(&MsgGatewayDelegate{}, MSG_GATEWAY_DELEGATION, nil)
+	cdc.RegisterConcrete(&MsgGatewayUndelegate{}, MSG_GATEWAY_UNDELEGATION, nil)
 }
 
 
@@ -20,7 +21,8 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
 		&MsgGatewayRegister{},
-		&MsgAddressBookSave{},
+		&MsgGatewayDelegate{},
+		&MsgGatewayUndelegate{},
 	)
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
